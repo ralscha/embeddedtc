@@ -42,7 +42,7 @@ public class EmbeddedTomcat {
 	private String contextDir;
 	private boolean removeDefaultServlet;
 	private List<Artifact> resourceArtifacts;
-	private Map<Class<ServletContainerInitializer>, Set<Class<?>>> initializers;
+	private Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializers;
 	private List<ContextEnvironment> contextEnvironments;
 	private List<ContextResource> contextResources;
 
@@ -60,7 +60,7 @@ public class EmbeddedTomcat {
 		}
 		this.contextEnvironments = new ArrayList<ContextEnvironment>();
 		this.contextResources = new ArrayList<ContextResource>();
-		this.initializers = new HashMap<Class<ServletContainerInitializer>, Set<Class<?>>>();
+		this.initializers = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
 		this.resourceArtifacts = new ArrayList<Artifact>();
 		this.contextDir = new File(".").getAbsolutePath() + "/src/main/webapp";
 		this.tempDir = null;
@@ -190,7 +190,7 @@ public class EmbeddedTomcat {
 		}
 
 		if (!initializers.isEmpty()) {
-			for (Map.Entry<Class<ServletContainerInitializer>, Set<Class<?>>> entry : initializers.entrySet()) {
+			for (Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> entry : initializers.entrySet()) {
 				ctx.addServletContainerInitializer(entry.getKey().newInstance(), entry.getValue());
 			}
 
