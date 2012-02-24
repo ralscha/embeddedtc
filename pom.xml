@@ -42,7 +42,7 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:https://github.com/ralscha/embeddedtc.git</connection>
+		<connection>scm:git:git@github.com:ralscha/embeddedtc.git</connection>
 		<developerConnection>scm:git:git@github.com:ralscha/embeddedtc.git</developerConnection>
 		<url>https://github.com/ralscha/embeddedtc</url>
 	</scm>
