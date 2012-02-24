@@ -177,12 +177,4 @@
 	</build>
 
 
-	<distributionManagement>
-		<repository>
-			<id>localwww</id>
-			<url>file:/var/www/repository</url>
-		</repository>
-	</distributionManagement>
-
-
 </project>
