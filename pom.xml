@@ -1,14 +1,51 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ch.ralscha</groupId>
-	<artifactId>embeddedtc</artifactId>
-	<version>0.0.1</version>
-	<description>Embedded Tomcat</description>
 
 	<prerequisites>
 		<maven>3.0.0</maven>
 	</prerequisites>
+
+	<parent>
+		<artifactId>oss-parent</artifactId>
+		<groupId>org.sonatype.oss</groupId>
+		<version>7</version>
+	</parent>
+
+	<groupId>ch.ralscha</groupId>
+	<artifactId>embeddedtc</artifactId>
+	<version>0.0.1</version>
+
+	<inceptionYear>2012</inceptionYear>
+	<name>Embedded Tomcat Helper</name>
+	<description>Helper class to simplify setting up a Embedded Tomcat</description>
+	<url>https://github.com/ralscha/embeddedtc</url>
+
+	<developers>
+		<developer>
+			<name>Ralph Schaer</name>
+			<email>ralphschaer@gmail.com</email>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/ralscha/embeddedtc/issues</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git:https://github.com/ralscha/embeddedtc.git</connection>
+		<developerConnection>scm:git:git@github.com:ralscha/embeddedtc.git</developerConnection>
+		<url>https://github.com/ralscha/embeddedtc</url>
+	</scm>
 
 	<properties>
 		<tomcat.version>7.0.26</tomcat.version>
@@ -79,7 +116,37 @@
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.4</version>
-			</plugin>			
+			</plugin>
+
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.10.b1</version>
+				<configuration>
+					<header>${basedir}/src/main/config/header.txt</header>
+					<properties>
+						<owner>Ralph Schaer</owner>
+						<year>${project.inceptionYear}</year>
+						<currentYear>2012</currentYear>
+						<email>ralphschaer@gmail.com</email>
+					</properties>
+					<excludes>
+						<exclude>**/*.xml</exclude>
+						<exclude>**/*.txt</exclude>
+						<exclude>**/.gitignore</exclude>
+					</excludes>
+					<strictCheck>true</strictCheck>
+				</configuration>
+				<executions>
+					<execution>
+						<id>check-headers</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 		</plugins>
 	</build>
