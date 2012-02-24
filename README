@@ -1,0 +1,35 @@
+Helper class to simplify starting a embedded Tomcat in the
+development environment for a Maven webapplication project.
+
+Add this dependecy to your project.
+
+		<dependency>
+			<groupId>ch.ralscha</groupId>
+			<artifactId>embeddedtc</artifactId>
+			<version>0.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		
+and start the embedded Tomcat with ch.ralscha.embeddedtc.EmbeddedTomcat.	
+This starts a Tomcat on port 8080 with a context path "/" and a context directory
+that points to current_dir + /src/main/webapp
+
+If you need more control create a class in your project (e.g. StartTomcat) and
+create an instance of EmbeddedTomcat, call the configure methods and start it
+with start()
+
+public class StartTomcat {
+
+	public static void main(String[] args) throwsException {
+
+		EmbeddedTomcat etc = new EmbeddedTomcat(9999);
+		etc.setContextDirectory("/home/mywebapp");
+		etc.setTempDirectoryName("tmp");
+		etc.addContextEnvironmentString("key", "value");
+		etc.start();
+	}
+
+}
+
+   
+		
