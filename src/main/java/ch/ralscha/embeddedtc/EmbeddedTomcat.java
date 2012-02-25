@@ -614,8 +614,10 @@ public class EmbeddedTomcat {
 				socket.close();
 			} catch (UnknownHostException e) {
 				log.info(e);
+				return;
 			} catch (IOException e) {
 				log.info(e);
+				return;
 			}
 	        
 	        //try to wait specified seconds until port becomes available
