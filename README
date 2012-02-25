@@ -19,7 +19,6 @@ create an instance of EmbeddedTomcat, call the configure methods and start it
 with start()
 
 public class StartTomcat {
-
 	public static void main(String[] args) throwsException {
 
 		EmbeddedTomcat etc = new EmbeddedTomcat(9999);
@@ -28,8 +27,21 @@ public class StartTomcat {
 		etc.addContextEnvironmentString("key", "value");
 		etc.start();
 	}
-
 }
+
+
+
+CHANGELOG
+=========
+
+0.0.2   ?                 
+  * Convert exceptions to RuntimeException
+  * Starts by default a shutdown listener on the shutdown port (port + 1000)
+  * Before starting a new Tomcat it tries to stop a previous one 
+    by sending a command to the shutdown port.
+
+0.0.1   February 24, 2012 
+  * Initial version
 
    
 		

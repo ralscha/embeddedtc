@@ -17,16 +17,20 @@ package ch.ralscha.embeddedtc;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletException;
@@ -44,6 +48,8 @@ import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -58,11 +64,17 @@ import org.xml.sax.SAXException;
  */
 public class EmbeddedTomcat {
 
+	private static final Log log = LogFactory.getLog(EmbeddedTomcat.class);
+	
+	private static final String SHUTDOWN_COMMAND = "EMBEDDED_TC_SHUTDOWN";
+	
 	private String contextPath;
-	private int port;
+	private Integer port;
+	private Integer shutdownPort;
+	private int secondsToWaitBeforePortBecomesAvailable;
 	private String tempDirectory;
 	private String contextDirectory;
-	private boolean removeDefaultServlet;
+	private boolean removeDefaultServlet;	
 	private List<Artifact> resourceArtifacts;
 	private Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializers;
 	private List<ContextEnvironment> contextEnvironments;
@@ -134,6 +146,9 @@ public class EmbeddedTomcat {
 		this.tempDirectory = null;
 		this.removeDefaultServlet = false;
 		this.port = port;
+		this.shutdownPort = port + 1000;
+		this.secondsToWaitBeforePortBecomesAvailable = 10;
+		
 		this.tomcat = null;
 
 		if (contextPath != null) {
@@ -216,10 +231,51 @@ public class EmbeddedTomcat {
 		this.m2Directory = m2Directory;
 	}
 
+	/**
+	 * Calling this method prevents adding the DefaultServlet to the context.
+	 * This is needed if the programm uses an initializer that adds a servlet  
+	 * with a mapping of "/"
+	 * 
+	 * @see EmbeddedTomcat#addInitializer(Class, Class)
+	 */
 	public void removeDefaultServlet() {
 		this.removeDefaultServlet = true;
 	}
 
+	/**
+	 * The EmbeddedTomcat opens as default a shutdown port on port + 1000
+	 * with the shutdown command <code>EMBEDDED_TC_SHUTDOWN</code>
+	 * Calling this method disables adding the shutdown hook.
+	 */
+	public void dontAddShutdownHook() {
+		this.shutdownPort = null;
+	}
+
+	/**
+	 * Before starting the embedded Tomcat the programm tries to stop a previous process
+	 * by sendig the shutdown command to the shutdown port.
+	 * It then waits for the port to become available. It checks this every second
+	 * for the specified number of seconds
+	 * 
+	 * @param secondsToWaitBeforePortBecomesAvailable
+	 */
+	public void setSecondsToWaitBeforePortBecomesAvailable(int seconds) {
+		this.secondsToWaitBeforePortBecomesAvailable = seconds;
+	}
+
+	/**
+	 * Specifies the port the server is listen for the shutdown command.
+	 * Default is port + 1000
+	 * 
+	 * @param shutdownPort the shutdown port 
+	 * 
+	 * @see EmbeddedTomcat#dontAddShutdownHook()
+	 */
+	public void setShutdownPort(int shutdownPort) {
+		this.shutdownPort = shutdownPort;
+	}
+	
+	
 	/**
 	 * Adds all the dependencies specified in the pom.xml (except scope provided)
 	 * to the context as a resource jar. A resource jar contains
@@ -414,14 +470,16 @@ public class EmbeddedTomcat {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	public void start() throws LifecycleException, ServletException, InstantiationException, IllegalAccessException,
-			ParserConfigurationException, SAXException, IOException {
+	public void start() {
 
+		//try to shutdown a previous Tomcat
+		sendShutdownCommand();
+		
 		try {
 			ServerSocket srv = new ServerSocket(port);
 			srv.close();
 		} catch (IOException e) {
-			System.out.println("PORT " + port + " ALREADY IN USE");
+			log.error("PORT " + port + " ALREADY IN USE");
 			return;
 		}
 
@@ -429,7 +487,12 @@ public class EmbeddedTomcat {
 
 		tomcat = new Tomcat();
 		tomcat.setPort(port);
-
+		
+		if (shutdownPort != null) {
+			tomcat.getServer().setPort(shutdownPort);
+			tomcat.getServer().setShutdown(SHUTDOWN_COMMAND);
+		}
+		
 		if (tempDirectory == null) {
 			String baseDirName = contextPath;
 			if ("/".equals(baseDirName)) {
@@ -451,7 +514,12 @@ public class EmbeddedTomcat {
 			contextDir = new File(".").getAbsolutePath() + "/src/main/webapp";
 		}
 
-		final Context ctx = tomcat.addWebapp(contextPath, contextDir);
+		final Context ctx;
+		try {
+			ctx = tomcat.addWebapp(contextPath, contextDir);
+		} catch (ServletException e) {
+			throw new RuntimeException(e);
+		}
 
 		if (!contextEnvironments.isEmpty() || !contextResources.isEmpty()) {
 			tomcat.enableNaming();
@@ -477,7 +545,16 @@ public class EmbeddedTomcat {
 		}
 
 		if (!resourceArtifacts.isEmpty()) {
-			List<URL> resourceUrls = findResourceUrls();
+			List<URL> resourceUrls;
+			try {
+				resourceUrls = findResourceUrls();
+			} catch (ParserConfigurationException e) {
+				throw new RuntimeException(e);
+			} catch (SAXException e) {
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			for (URL url : resourceUrls) {
 				ctx.addResourceJarUrl(url);
 			}
@@ -485,12 +562,23 @@ public class EmbeddedTomcat {
 
 		if (!initializers.isEmpty()) {
 			for (Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> entry : initializers.entrySet()) {
-				ctx.addServletContainerInitializer(entry.getKey().newInstance(), entry.getValue());
+				try {
+					ctx.addServletContainerInitializer(entry.getKey().newInstance(), entry.getValue());
+				} catch (InstantiationException e) {
+					throw new RuntimeException(e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
 			}
 
 		}
 
-		tomcat.start();
+		try {
+			tomcat.start();
+		} catch (LifecycleException e) {
+			throw new RuntimeException(e);
+		}
+		
 		((StandardManager) ctx.getManager()).setPathname("");
 
 		tomcat.getServer().await();
@@ -501,10 +589,52 @@ public class EmbeddedTomcat {
 	 * 
 	 * @throws LifecycleException
 	 */
-	public void stop() throws LifecycleException {
+	public void stop() {
 		if (tomcat != null) {
-			tomcat.stop();
+			try {
+				tomcat.stop();
+			} catch (LifecycleException e) {
+				throw new RuntimeException(e);
+			}
 		}
+	}
+	
+	private void sendShutdownCommand() {
+		if (shutdownPort != null) {
+	        try {
+				Socket socket = new Socket("localhost", shutdownPort);
+				OutputStream stream = socket.getOutputStream();
+
+				for (int i = 0; i < SHUTDOWN_COMMAND.length(); i++) {
+				    stream.write(SHUTDOWN_COMMAND.charAt(i));
+				}
+				
+				stream.flush();
+				stream.close();
+				socket.close();
+			} catch (UnknownHostException e) {
+				log.info(e);
+			} catch (IOException e) {
+				log.info(e);
+			}
+	        
+	        //try to wait specified seconds until port becomes available
+	        int count = 0;
+	        while(count < secondsToWaitBeforePortBecomesAvailable) {
+				try {
+					ServerSocket srv = new ServerSocket(port);
+					srv.close();
+					return;					
+				} catch (IOException e) {
+					count++;				
+				}
+				try {
+					TimeUnit.SECONDS.sleep(1);
+				} catch (InterruptedException e) {
+					return;
+				}
+	        }	        
+		}	
 	}
 
 	private static void installSlf4jBridge() {
@@ -521,15 +651,15 @@ public class EmbeddedTomcat {
 		} catch (ClassNotFoundException e) {
 			//do nothing
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
