@@ -534,7 +534,6 @@ public class EmbeddedTomcat {
 		if (tempDirectory == null) {
 			File tempdir = new File(System.getProperty("java.io.tmpdir"));
 			tempDirectory = new File(tempdir, "/tomcat." + port).getAbsolutePath();
-			System.out.println(tempDirectory);
 		}
 
 		tomcat.setBaseDir(tempDirectory);
