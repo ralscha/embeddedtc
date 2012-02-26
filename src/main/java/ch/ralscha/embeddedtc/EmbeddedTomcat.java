@@ -664,7 +664,7 @@ public class EmbeddedTomcat {
 
 			//try to wait specified seconds until port becomes available
 			int count = 0;
-			while (count < secondsToWaitBeforePortBecomesAvailable) {
+			while (count < secondsToWaitBeforePortBecomesAvailable*2) {
 				try {
 					ServerSocket srv = new ServerSocket(port);
 					srv.close();
@@ -673,7 +673,7 @@ public class EmbeddedTomcat {
 					count++;
 				}
 				try {
-					TimeUnit.SECONDS.sleep(1);
+					TimeUnit.MILLISECONDS.sleep(500);
 				} catch (InterruptedException e) {
 					return;
 				}
