@@ -494,6 +494,26 @@ public class EmbeddedTomcat {
 	}
 
 	/**
+	 * Read ContextEnvironment and ContextResource definition from a 
+	 * text file. 
+	 * 
+	 * @param contextFile Location to a context file
+	 */
+	public void addContextEnvironmentAndResourceFromFile(final File contextFile) {
+		try {
+			ContextConfig cc = (ContextConfig) ContextConfig.createDigester().parse(contextFile);
+			if (cc != null) {
+				contextEnvironments.addAll(cc.getEnvironments());
+				contextResources.addAll(cc.getResources());
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
 	 * Starts the embedded Tomcat and do not wait for incoming requests.
 	 * Returns immediately if the configured port is in use.
 	 * 
