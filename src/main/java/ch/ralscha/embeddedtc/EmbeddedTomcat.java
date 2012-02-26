@@ -76,6 +76,7 @@ public class EmbeddedTomcat {
 	private String contextDirectory;
 	private boolean removeDefaultServlet;
 	private boolean privileged;
+	private boolean silent;
 	private List<Artifact> resourceArtifacts;
 	private Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializers;
 	private List<ContextEnvironment> contextEnvironments;
@@ -147,6 +148,7 @@ public class EmbeddedTomcat {
 		this.shutdownPort = port + 1000;
 		this.secondsToWaitBeforePortBecomesAvailable = 10;
 		this.privileged = false;
+		this.silent = false;
 
 		this.tomcat = null;
 
@@ -283,7 +285,16 @@ public class EmbeddedTomcat {
     	this.privileged = privileged;
     }
 
-	
+    /**
+     * Set the silent flag of Tomcat. 
+     * If true Tomcat no longer outputs any messages
+     * 
+     * @param silent The new silent flag
+     */
+	public void setSilent(boolean silent) {
+		this.silent = silent;
+	}
+
 	/**
 	 * Adds all the dependencies specified in the pom.xml (except scope provided)
 	 * to the context as a resource jar. A resource jar contains
@@ -506,6 +517,10 @@ public class EmbeddedTomcat {
 
 		tomcat = new Tomcat();
 		tomcat.setPort(port);
+		
+		if (silent) {
+			tomcat.setSilent(true);
+		}
 
 		if (shutdownPort != null) {
 			tomcat.getServer().setPort(shutdownPort);
@@ -636,10 +651,14 @@ public class EmbeddedTomcat {
 				stream.close();
 				socket.close();
 			} catch (UnknownHostException e) {
-				log.info(e);
+				if (!silent) {
+					log.info(e);
+				}
 				return;
 			} catch (IOException e) {
-				log.info(e);
+				if (!silent) {
+					log.info(e);
+				}
 				return;
 			}
 
