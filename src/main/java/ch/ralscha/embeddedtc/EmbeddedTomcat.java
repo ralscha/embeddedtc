@@ -287,7 +287,7 @@ public class EmbeddedTomcat {
 
     /**
      * Set the silent flag of Tomcat. 
-     * If true Tomcat no longer outputs any messages
+     * If true Tomcat no longer prints any log messages
      * 
      * @param silent The new silent flag
      */
