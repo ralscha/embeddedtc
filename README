@@ -34,7 +34,11 @@ public class StartTomcat {
 CHANGELOG
 =========
 
-0.0.2   ?                 
+0.0.3   February 26, 2012
+  * The start() method no longer blocks after starting Tomcat
+  * Added a new method startAndWait() that blocks the program after starting Tomcat  
+
+0.0.2   February 25, 2012                 
   * Convert exceptions to RuntimeException
   * Starts by default a shutdown listener on the shutdown port (port + 1000)
   * Before starting a new Tomcat it tries to stop a previous one 
