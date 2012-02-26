@@ -1,5 +1,5 @@
 /**
- * Copyright 2012-2012 Ralph Schaer <ralphschaer@gmail.com>
+ * Copyright 2012 Ralph Schaer <ralphschaer@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,16 +65,17 @@ import org.xml.sax.SAXException;
 public class EmbeddedTomcat {
 
 	private static final Log log = LogFactory.getLog(EmbeddedTomcat.class);
-	
+
 	private static final String SHUTDOWN_COMMAND = "EMBEDDED_TC_SHUTDOWN";
-	
+
 	private String contextPath;
 	private Integer port;
 	private Integer shutdownPort;
 	private int secondsToWaitBeforePortBecomesAvailable;
 	private String tempDirectory;
 	private String contextDirectory;
-	private boolean removeDefaultServlet;	
+	private boolean removeDefaultServlet;
+	private boolean privileged;
 	private List<Artifact> resourceArtifacts;
 	private Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializers;
 	private List<ContextEnvironment> contextEnvironments;
@@ -88,18 +89,10 @@ public class EmbeddedTomcat {
 	 * Starts a embedded Tomcat on port 8080 with context path "/"
 	 * and context directory current directory + /src/main/webapp
 	 * 
-	 * @param args
-	 * @throws IllegalAccessException
-	 * @throws LifecycleException
-	 * @throws ServletException
-	 * @throws InstantiationException
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
+	 * @param args program arguments
 	 */
-	public static void main(String[] args) throws IllegalAccessException, LifecycleException, ServletException,
-			InstantiationException, ParserConfigurationException, SAXException, IOException {
-		new EmbeddedTomcat().start();
+	public static void main(String[] args) {
+		new EmbeddedTomcat().startAndWait();
 	}
 
 	/**
@@ -117,6 +110,8 @@ public class EmbeddedTomcat {
 	 * Creates an embedded Tomcat with context path "/" and specified port. 
 	 * Context directory points to current directory + /src/main/webapp
 	 * Change context directory with the method <code>setContextDirectory(String)</code>
+	 * 
+	 * @param port ip port the server is listening
 	 *  
 	 * @see 	#setContextDirectory(String)
 	 */
@@ -128,6 +123,9 @@ public class EmbeddedTomcat {
 	 * Creates an embedded Tomcat with specified context path and specified port. 
 	 * Context directory points to current directory + /src/main/webapp
 	 * Change context directory with the method <code>setContextDirectory(String)</code>
+	 * 
+	 * @param contextPath has to begin with / 
+	 * @param port ip port the server is listening
 	 *  
 	 * @see 	EmbeddedTomcat#setContextDirectory(String)
 	 */
@@ -148,7 +146,8 @@ public class EmbeddedTomcat {
 		this.port = port;
 		this.shutdownPort = port + 1000;
 		this.secondsToWaitBeforePortBecomesAvailable = 10;
-		
+		this.privileged = false;
+
 		this.tomcat = null;
 
 		if (contextPath != null) {
@@ -257,7 +256,7 @@ public class EmbeddedTomcat {
 	 * It then waits for the port to become available. It checks this every second
 	 * for the specified number of seconds
 	 * 
-	 * @param secondsToWaitBeforePortBecomesAvailable
+	 * @param seconds number of seconds
 	 */
 	public void setSecondsToWaitBeforePortBecomesAvailable(int seconds) {
 		this.secondsToWaitBeforePortBecomesAvailable = seconds;
@@ -274,7 +273,16 @@ public class EmbeddedTomcat {
 	public void setShutdownPort(int shutdownPort) {
 		this.shutdownPort = shutdownPort;
 	}
-	
+
+    /**
+     * Set the privileged flag for this web application.
+     *
+     * @param privileged The new privileged flag
+     */
+    public void setPrivileged(boolean privileged) {
+    	this.privileged = privileged;
+    }
+
 	
 	/**
 	 * Adds all the dependencies specified in the pom.xml (except scope provided)
@@ -292,6 +300,9 @@ public class EmbeddedTomcat {
 	 * The helper class automatically locates the version of the
 	 * specified artifact in the pom.xml and locates the jar file
 	 * in the local maven repository.
+	 * 
+	 * @param groupId the maven groupId name
+	 * @param artifact the maven artifact name
 	 * 
 	 * @see Context#addResourceJarUrl(URL)
 	 * @see EmbeddedTomcat#addAllDependenciesAsResourceJar()
@@ -368,12 +379,12 @@ public class EmbeddedTomcat {
 	 * Example:<br> 
 	 * Tomcat context xml file
 	 * <pre>
-  	 *  &ltResource name="jdbc/ds" auth="Container"
-     *     type="javax.sql.DataSource" username="sa" password=""
-     *     driverClassName="org.h2.Driver"
-     *     url="jdbc:h2:~/mydb"
-     *     maxActive="20" maxIdle="4" maxWait="10000"
-     *     defaultAutoCommit="false"/&gt;
+	 *  &ltResource name="jdbc/ds" auth="Container"
+	 *     type="javax.sql.DataSource" username="sa" password=""
+	 *     driverClassName="org.h2.Driver"
+	 *     url="jdbc:h2:~/mydb"
+	 *     maxActive="20" maxIdle="4" maxWait="10000"
+	 *     defaultAutoCommit="false"/&gt;
 	 * </pre>
 	 * Programmatic way:
 	 * <pre>
@@ -459,22 +470,30 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * Starts the embedded Tomcat. 
+	 * Starts the embedded Tomcat and do not wait for incoming requests.
 	 * Returns immediately if the configured port is in use.
-	 *  
-	 * @throws LifecycleException
-	 * @throws ServletException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
+	 * 
+	 * @see EmbeddedTomcat#startAndWait() 
 	 */
 	public void start() {
+		start(false);
+	}
+
+	/**
+	 * Starts the embedded Tomcat and waits for incoming requests.
+	 * Returns immediately if the configured port is in use.
+	 * 
+	 * @see EmbeddedTomcat#start()
+	 */
+	public void startAndWait() {
+		start(true);
+	}
+
+	private void start(boolean await) {
 
 		//try to shutdown a previous Tomcat
 		sendShutdownCommand();
-		
+
 		try {
 			ServerSocket srv = new ServerSocket(port);
 			srv.close();
@@ -487,12 +506,12 @@ public class EmbeddedTomcat {
 
 		tomcat = new Tomcat();
 		tomcat.setPort(port);
-		
+
 		if (shutdownPort != null) {
 			tomcat.getServer().setPort(shutdownPort);
 			tomcat.getServer().setShutdown(SHUTDOWN_COMMAND);
 		}
-		
+
 		if (tempDirectory == null) {
 			String baseDirName = contextPath;
 			if ("/".equals(baseDirName)) {
@@ -519,6 +538,10 @@ public class EmbeddedTomcat {
 			ctx = tomcat.addWebapp(contextPath, contextDir);
 		} catch (ServletException e) {
 			throw new RuntimeException(e);
+		}
+
+		if (privileged) {
+			ctx.setPrivileged(true);
 		}
 
 		if (!contextEnvironments.isEmpty() || !contextResources.isEmpty()) {
@@ -578,16 +601,16 @@ public class EmbeddedTomcat {
 		} catch (LifecycleException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		((StandardManager) ctx.getManager()).setPathname("");
 
-		tomcat.getServer().await();
+		if (await) {
+			tomcat.getServer().await();
+		}
 	}
 
 	/**
 	 * Stops the embedded tomcat. Does nothing if it's not started
-	 * 
-	 * @throws LifecycleException
 	 */
 	public void stop() {
 		if (tomcat != null) {
@@ -598,17 +621,17 @@ public class EmbeddedTomcat {
 			}
 		}
 	}
-	
+
 	private void sendShutdownCommand() {
 		if (shutdownPort != null) {
-	        try {
+			try {
 				Socket socket = new Socket("localhost", shutdownPort);
 				OutputStream stream = socket.getOutputStream();
 
 				for (int i = 0; i < SHUTDOWN_COMMAND.length(); i++) {
-				    stream.write(SHUTDOWN_COMMAND.charAt(i));
+					stream.write(SHUTDOWN_COMMAND.charAt(i));
 				}
-				
+
 				stream.flush();
 				stream.close();
 				socket.close();
@@ -619,24 +642,24 @@ public class EmbeddedTomcat {
 				log.info(e);
 				return;
 			}
-	        
-	        //try to wait specified seconds until port becomes available
-	        int count = 0;
-	        while(count < secondsToWaitBeforePortBecomesAvailable) {
+
+			//try to wait specified seconds until port becomes available
+			int count = 0;
+			while (count < secondsToWaitBeforePortBecomesAvailable) {
 				try {
 					ServerSocket srv = new ServerSocket(port);
 					srv.close();
-					return;					
+					return;
 				} catch (IOException e) {
-					count++;				
+					count++;
 				}
 				try {
 					TimeUnit.SECONDS.sleep(1);
 				} catch (InterruptedException e) {
 					return;
 				}
-	        }	        
-		}	
+			}
+		}
 	}
 
 	private static void installSlf4jBridge() {
