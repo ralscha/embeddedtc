@@ -121,6 +121,19 @@ public class EmbeddedTomcat {
 	}
 
 	/**
+	 * Creates an embedded Tomcat with the specified context path and port 8080
+	 * Context directory points to current directory + /src/main/webapp
+	 * Change context directory with the method <code>setContextDirectory(String)</code>
+	 * 
+	 * @param contextPath The context path has to start with /
+	 * 
+	 * @see 	#setContextDirectory(String) 
+	 */
+	public EmbeddedTomcat(String contextPath) {
+		this(contextPath, 8080);
+	}
+
+	/**
 	 * Creates an embedded Tomcat with specified context path and specified port. 
 	 * Context directory points to current directory + /src/main/webapp
 	 * Change context directory with the method <code>setContextDirectory(String)</code>
@@ -276,21 +289,21 @@ public class EmbeddedTomcat {
 		this.shutdownPort = shutdownPort;
 	}
 
-    /**
-     * Set the privileged flag for this web application.
-     *
-     * @param privileged The new privileged flag
-     */
-    public void setPrivileged(boolean privileged) {
-    	this.privileged = privileged;
-    }
+	/**
+	 * Set the privileged flag for this web application.
+	 *
+	 * @param privileged The new privileged flag
+	 */
+	public void setPrivileged(boolean privileged) {
+		this.privileged = privileged;
+	}
 
-    /**
-     * Set the silent flag of Tomcat. 
-     * If true Tomcat no longer prints any log messages
-     * 
-     * @param silent The new silent flag
-     */
+	/**
+	 * Set the silent flag of Tomcat. 
+	 * If true Tomcat no longer prints any log messages
+	 * 
+	 * @param silent The new silent flag
+	 */
 	public void setSilent(boolean silent) {
 		this.silent = silent;
 	}
@@ -517,7 +530,15 @@ public class EmbeddedTomcat {
 
 		tomcat = new Tomcat();
 		tomcat.setPort(port);
-		
+
+		if (tempDirectory == null) {
+			File tempdir = new File(System.getProperty("java.io.tmpdir"));
+			tempDirectory = new File(tempdir, "/tomcat." + port).getAbsolutePath();
+			System.out.println(tempDirectory);
+		}
+
+		tomcat.setBaseDir(tempDirectory);
+
 		if (silent) {
 			tomcat.setSilent(true);
 		}
@@ -527,20 +548,6 @@ public class EmbeddedTomcat {
 			tomcat.getServer().setShutdown(SHUTDOWN_COMMAND);
 		}
 
-		if (tempDirectory == null) {
-			String baseDirName = contextPath;
-			if ("/".equals(baseDirName)) {
-				baseDirName = "_";
-			} else {
-				baseDirName = baseDirName.substring(1) + "_";
-			}
-
-			baseDirName += port;
-
-			tempDirectory = System.getProperty("java.io.tmpdir") + "/" + baseDirName;
-		}
-
-		tomcat.setBaseDir(tempDirectory);
 		tomcat.getConnector().setURIEncoding("UTF-8");
 
 		String contextDir = contextDirectory;
@@ -664,7 +671,7 @@ public class EmbeddedTomcat {
 
 			//try to wait specified seconds until port becomes available
 			int count = 0;
-			while (count < secondsToWaitBeforePortBecomesAvailable*2) {
+			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
 				try {
 					ServerSocket srv = new ServerSocket(port);
 					srv.close();

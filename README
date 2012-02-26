@@ -38,7 +38,9 @@ CHANGELOG
   * The start() method no longer blocks after starting Tomcat
   * Added a new method startAndWait() that blocks the program after starting Tomcat  
   * Added setSilent(boolean) method. If set to true it disables output messages.
-  
+  * Added new constructor EmbeddedTomcat(String contextPath). 
+    Creates Tomcat with specified context path and port 8080  
+    
 0.0.2   February 25, 2012                 
   * Convert exceptions to RuntimeException
   * Starts by default a shutdown listener on the shutdown port (port + 1000)
