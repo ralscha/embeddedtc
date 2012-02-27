@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletException;
@@ -50,6 +52,7 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.apache.naming.resources.FileDirContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -581,6 +584,33 @@ public class EmbeddedTomcat {
 			throw new RuntimeException(e);
 		}
 
+		if (!resourceArtifacts.isEmpty()) {
+			FileDirContext fileDirContext = new FileDirContext();
+			ctx.setResources(fileDirContext);
+
+			List<File> jarFiles;
+			try {
+				jarFiles = findJarFiles();
+				
+				for (File jarFile : jarFiles) {
+					ZipFile zipFile = new ZipFile(jarFile);
+		            ZipEntry entry = zipFile.getEntry("/");
+		            ZipDirContext zipDirContext = new ZipDirContext(zipFile,
+		                    new ZipDirContext.Entry("/", entry));
+		            zipDirContext.loadEntries();
+		            fileDirContext.addAltDirContext(zipDirContext);
+				}				
+				
+			} catch (ParserConfigurationException e) {
+				throw new RuntimeException(e);
+			} catch (SAXException e) {
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+
 		if (privileged) {
 			ctx.setPrivileged(true);
 		}
@@ -608,22 +638,6 @@ public class EmbeddedTomcat {
 			});
 		}
 
-		if (!resourceArtifacts.isEmpty()) {
-			List<URL> resourceUrls;
-			try {
-				resourceUrls = findResourceUrls();
-			} catch (ParserConfigurationException e) {
-				throw new RuntimeException(e);
-			} catch (SAXException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			for (URL url : resourceUrls) {
-				ctx.addResourceJarUrl(url);
-			}
-		}
-
 		if (!initializers.isEmpty()) {
 			for (Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> entry : initializers.entrySet()) {
 				try {
@@ -634,7 +648,6 @@ public class EmbeddedTomcat {
 					throw new RuntimeException(e);
 				}
 			}
-
 		}
 
 		try {
@@ -733,7 +746,7 @@ public class EmbeddedTomcat {
 		}
 	}
 
-	private List<URL> findResourceUrls() throws ParserConfigurationException, SAXException, IOException {
+	private List<File> findJarFiles() throws ParserConfigurationException, SAXException, IOException {
 
 		File m2Dir = this.m2Directory;
 		if (m2Dir == null) {
@@ -741,7 +754,7 @@ public class EmbeddedTomcat {
 			m2Dir = new File(homeDir, ".m2/repository/");
 		}
 
-		List<URL> jars = new ArrayList<URL>();
+		List<File> jars = new ArrayList<File>();
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
@@ -793,8 +806,7 @@ public class EmbeddedTomcat {
 					String artifactFileName = groupId + "/" + artifact + "/" + version + "/" + artifact + "-" + version
 							+ ".jar";
 
-					String pathName = new File(m2Dir, artifactFileName).getPath();
-					jars.add(new URL("jar:file:/" + pathName + "!/"));
+					jars.add(new File(m2Dir, artifactFileName));
 				}
 
 			}
