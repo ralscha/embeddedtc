@@ -15,6 +15,8 @@
  */
 package ch.ralscha.embeddedtc;
 
+import java.io.File;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -33,7 +35,15 @@ public class TomcatTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		et = new EmbeddedTomcat(9998);
+
+		int port = 9998;
+
+		//Cleaning temp directory
+		File tempDirectory = new File(".", "/target/tomcat." + port);
+		deleteDir(tempDirectory);
+
+		//Starting Tomcat
+		et = new EmbeddedTomcat(port);
 		et.setSilent(true);
 		et.setPrivileged(true);
 		et.dontAddShutdownHook();
@@ -46,5 +56,14 @@ public class TomcatTest {
 	@AfterClass
 	public static void stopServer() {
 		et.stop();
+	}
+
+	private static void deleteDir(File dir) {
+		if (dir.isDirectory()) {
+			for (File child : dir.listFiles()) {
+				deleteDir(child);
+			}
+		}
+		dir.delete();
 	}
 }

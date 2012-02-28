@@ -39,6 +39,7 @@ CHANGELOG
   * Changed the way resource jars are loaded. In older version the ZipFile was closed after starting Tomcat
     and was no longer able to read content from the jar file.   
   * Moved default temporary directory to the projects target directory
+  * TomcatTest: Now deletes temp directory before starting the Tomcat
     
 0.0.3   February 26, 2012
   * The start() method no longer blocks after starting Tomcat
