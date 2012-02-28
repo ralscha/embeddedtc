@@ -192,17 +192,11 @@ public class EmbeddedTomcat {
 	/**
 	 * Sets the location of the temporary directory. Tomcat needs this
 	 * for storing temporary files like compiled jsp files.
-	 * Default value is for a context path "/"
+	 * Default value is
 	 * <p>
 	 * <code>
-	 * System.getProperty("java.io.tmpdir") + "/_" + port 
+	 * target/tomcat. + port 
 	 * </code>
-	 * <p>
-	 * and with every other context path 
-	 * <p>
-	 * <code>
-	 * System.getProperty("java.io.tmpdir") + contextPath + "_" + port 
-	 * </code> 
 	 * 
 	 * @param tempDirectory File object that represents the location of the temp directory 
 	 */
@@ -211,8 +205,7 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * Sets the temporary directory to a directory beneath
-	 * <code>System.getProperty("java.io.tmpdir")</code>
+	 * Sets the temporary directory to a directory beneath the target directory
 	 * <br>
 	 * The directory does not have to exists, Tomcat will create it
 	 * automatically if necessary.
@@ -222,7 +215,7 @@ public class EmbeddedTomcat {
 	 * @see EmbeddedTomcat#setTempDirectory(File)
 	 */
 	public void setTempDirectoryName(String name) {
-		this.tempDirectory = System.getProperty("java.io.tmpdir") + "/" + name;
+		this.tempDirectory = new File(".", "target/" + name).getAbsolutePath();
 	}
 
 	/**
@@ -555,8 +548,7 @@ public class EmbeddedTomcat {
 		tomcat.setPort(port);
 
 		if (tempDirectory == null) {
-			File tempdir = new File(System.getProperty("java.io.tmpdir"));
-			tempDirectory = new File(tempdir, "/tomcat." + port).getAbsolutePath();
+			tempDirectory = new File(".", "/target/tomcat." + port).getAbsolutePath();
 		}
 
 		tomcat.setBaseDir(tempDirectory);
