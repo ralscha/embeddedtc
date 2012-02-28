@@ -591,16 +591,15 @@ public class EmbeddedTomcat {
 			List<File> jarFiles;
 			try {
 				jarFiles = findJarFiles();
-				
+
 				for (File jarFile : jarFiles) {
 					ZipFile zipFile = new ZipFile(jarFile);
-		            ZipEntry entry = zipFile.getEntry("/");
-		            ZipDirContext zipDirContext = new ZipDirContext(zipFile,
-		                    new ZipDirContext.Entry("/", entry));
-		            zipDirContext.loadEntries();
-		            fileDirContext.addAltDirContext(zipDirContext);
-				}				
-				
+					ZipEntry entry = zipFile.getEntry("/");
+					ZipDirContext zipDirContext = new ZipDirContext(zipFile, new ZipDirContext.Entry("/", entry));
+					zipDirContext.loadEntries();
+					fileDirContext.addAltDirContext(zipDirContext);
+				}
+
 			} catch (ParserConfigurationException e) {
 				throw new RuntimeException(e);
 			} catch (SAXException e) {
@@ -691,12 +690,12 @@ public class EmbeddedTomcat {
 				socket.close();
 			} catch (UnknownHostException e) {
 				if (!silent) {
-					log.info(e);
+					log.debug(e);
 				}
 				return;
 			} catch (IOException e) {
 				if (!silent) {
-					log.info(e);
+					log.debug(e);
 				}
 				return;
 			}
