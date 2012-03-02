@@ -33,13 +33,13 @@ public class StartTomcat {
 
 CHANGELOG
 =========
-0.0.4   ?
+0.0.4   March 2, 2012
   * Add a new method addContextEnvironmentAndResourceFromFile(File f)
     Reads ContextEnvironment and Contextresource from a file and adds it to the embedded Tomcat
   * Changed the way resource jars are loaded. In older version the ZipFile was closed after starting Tomcat
     and was no longer able to read content from the jar file.   
   * Moved default temporary directory to the projects target directory
-  * TomcatTest: Now deletes temp directory before starting the Tomcat
+  * TomcatTest: Now deletes temp directory before starting Tomcat
     
 0.0.3   February 26, 2012
   * The start() method no longer blocks after starting Tomcat
