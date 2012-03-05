@@ -33,6 +33,9 @@ public class StartTomcat {
 
 CHANGELOG
 =========
+0.0.5   ?
+  * Make class ContextConfig public. Digester cannot class if class has package visibility 
+
 0.0.4   March 2, 2012
   * Add a new method addContextEnvironmentAndResourceFromFile(File f)
     Reads ContextEnvironment and Contextresource from a file and adds it to the embedded Tomcat

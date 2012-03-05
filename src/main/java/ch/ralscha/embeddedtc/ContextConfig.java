@@ -23,7 +23,8 @@ import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.startup.SetAllPropertiesRule;
 import org.apache.tomcat.util.digester.Digester;
 
-class ContextConfig {
+@SuppressWarnings("javadoc")
+public class ContextConfig {
 	private List<ContextResource> resources = new ArrayList<ContextResource>();
 	private List<ContextEnvironment> environments = new ArrayList<ContextEnvironment>();
 
