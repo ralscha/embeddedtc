@@ -1,4 +1,4 @@
-Helper class to simplify starting a embedded Tomcat in the
+Helper class to simplify starting an embedded Tomcat in a
 development environment for a Maven webapplication project.
 
 Add this dependecy to your project.
@@ -6,7 +6,7 @@ Add this dependecy to your project.
 		<dependency>
 			<groupId>ch.ralscha</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.5</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -16,7 +16,7 @@ that points to current_dir + /src/main/webapp
 
 If you need more control create a class in your project (e.g. StartTomcat) and
 create an instance of EmbeddedTomcat, call the configure methods and start it
-with start()
+with startAndWait()
 
 public class StartTomcat {
 	public static void main(String[] args) throwsException {
@@ -25,16 +25,31 @@ public class StartTomcat {
 		etc.setContextDirectory("/home/mywebapp");
 		etc.setTempDirectoryName("tmp");
 		etc.addContextEnvironmentString("key", "value");
-		etc.start();
+		etc.startAndWait();
+	}
+}
+
+or with method chaining
+
+public class StartTomcat {
+	public static void main(String[] args) throwsException {
+
+		EmbeddedTomcat.create()
+		              .setPort(9999)
+		              .setContextDirector("/home/mywebapp")
+		              .setTempDirectoryName("tmp")
+		              .addContextEnvironmentString("key", "value")
+		              .startAndWait();
 	}
 }
 
 
-
 CHANGELOG
 =========
-0.0.5   ?
-  * Make class ContextConfig public. Digester cannot class if class has package visibility 
+0.0.5   March 9, 2012
+  * Bugfix: Make class ContextConfig public. Digester cannot access class if it has package visibility
+  * All config methods now return the EmbeddedTomcat instance to enable method chaining 
+  * Changed parameters to final
 
 0.0.4   March 2, 2012
   * Add a new method addContextEnvironmentAndResourceFromFile(File f)

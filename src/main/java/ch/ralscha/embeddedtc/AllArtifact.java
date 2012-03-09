@@ -22,7 +22,7 @@ class AllArtifact extends Artifact {
 	}
 
 	@Override
-	public boolean is(String groupId, String artifact) {
+	public boolean is(final String groupId, final String artifact) {
 		return true;
 	}
 

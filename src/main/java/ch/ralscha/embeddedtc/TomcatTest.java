@@ -36,10 +36,10 @@ public class TomcatTest {
 	@BeforeClass
 	public static void startServer() {
 
-		int port = 9998;
+		final int port = 9998;
 
 		//Cleaning temp directory
-		File tempDirectory = new File(".", "/target/tomcat." + port);
+		final File tempDirectory = new File(".", "/target/tomcat." + port);
 		deleteDir(tempDirectory);
 
 		//Starting Tomcat
@@ -58,9 +58,9 @@ public class TomcatTest {
 		et.stop();
 	}
 
-	private static void deleteDir(File dir) {
+	private static void deleteDir(final File dir) {
 		if (dir.isDirectory()) {
-			for (File child : dir.listFiles()) {
+			for (final File child : dir.listFiles()) {
 				deleteDir(child);
 			}
 		}

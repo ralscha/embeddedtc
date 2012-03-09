@@ -25,14 +25,14 @@ import org.apache.tomcat.util.digester.Digester;
 
 @SuppressWarnings("javadoc")
 public class ContextConfig {
-	private List<ContextResource> resources = new ArrayList<ContextResource>();
-	private List<ContextEnvironment> environments = new ArrayList<ContextEnvironment>();
+	private final List<ContextResource> resources = new ArrayList<ContextResource>();
+	private final List<ContextEnvironment> environments = new ArrayList<ContextEnvironment>();
 
-	public void addResource(ContextResource res) {
+	public void addResource(final ContextResource res) {
 		resources.add(res);
 	}
 
-	public void addEnvironment(ContextEnvironment env) {
+	public void addEnvironment(final ContextEnvironment env) {
 		environments.add(env);
 	}
 
@@ -45,7 +45,7 @@ public class ContextConfig {
 	}
 
 	public static Digester createDigester() {
-		Digester digester = new Digester();
+		final Digester digester = new Digester();
 		digester.setValidating(false);
 		digester.setRulesValidation(true);
 

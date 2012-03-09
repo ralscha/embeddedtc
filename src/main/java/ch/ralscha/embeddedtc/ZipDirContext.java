@@ -72,7 +72,7 @@ class ZipDirContext extends BaseDirContext {
 	/**
 	 * Builds a WAR directory context using the given environment.
 	 */
-	public ZipDirContext(Hashtable<String, Object> env) {
+	public ZipDirContext(final Hashtable<String, Object> env) {
 		super(env);
 	}
 
@@ -80,7 +80,7 @@ class ZipDirContext extends BaseDirContext {
 	 * Constructor used for returning fake sub-contexts or for accessing
 	 * META-INF/resources locations in bundled JAR files.
 	 */
-	protected ZipDirContext(ZipFile base, Entry entries) {
+	protected ZipDirContext(final ZipFile base, final Entry entries) {
 		this.base = base;
 		this.entries = entries;
 	}
@@ -110,7 +110,7 @@ class ZipDirContext extends BaseDirContext {
 	 *  malformed URL
 	 */
 	@Override
-	public void setDocBase(String docBase) {
+	public void setDocBase(final String docBase) {
 
 		// Validate the format of the proposed document root
 		if (docBase == null) {
@@ -121,7 +121,7 @@ class ZipDirContext extends BaseDirContext {
 		}
 
 		// Calculate a File object referencing this document base directory
-		File base = new File(docBase);
+		final File base = new File(docBase);
 
 		// Validate that the document base is an existing directory
 		if (!base.exists() || !base.canRead() || base.isDirectory()) {
@@ -129,7 +129,7 @@ class ZipDirContext extends BaseDirContext {
 		}
 		try {
 			this.base = new ZipFile(base);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new IllegalArgumentException(sm.getString("warResources.invalidWar", e.getMessage()));
 		}
 		super.setDocBase(docBase);
@@ -150,7 +150,7 @@ class ZipDirContext extends BaseDirContext {
 		if (base != null) {
 			try {
 				base.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				log.warn("Exception closing WAR File " + base.getName(), e);
 			}
 		}
@@ -166,7 +166,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @param path The path to the desired resource
 	 */
 	@Override
-	protected String doGetRealPath(String path) {
+	protected String doGetRealPath(final String path) {
 		return null;
 	}
 
@@ -179,12 +179,12 @@ class ZipDirContext extends BaseDirContext {
 	 * @return the object bound to name
 	 */
 	@Override
-	protected Object doLookup(String strName) {
+	protected Object doLookup(final String strName) {
 
 		Name name;
 		try {
 			name = getEscapedJndiName(strName);
-		} catch (InvalidNameException e) {
+		} catch (final InvalidNameException e) {
 			log.info(sm.getString("resources.invalidName", strName), e);
 			return null;
 		}
@@ -192,12 +192,12 @@ class ZipDirContext extends BaseDirContext {
 		if (name.isEmpty()) {
 			return this;
 		}
-		Entry entry = treeLookup(name);
+		final Entry entry = treeLookup(name);
 		if (entry == null) {
 			return null;
 		}
 
-		ZipEntry zipEntry = entry.getEntry();
+		final ZipEntry zipEntry = entry.getEntry();
 		if (zipEntry.isDirectory()) {
 			return new ZipDirContext(base, entry);
 		}
@@ -213,7 +213,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @return  A valid JNDI name
 	 * @throws InvalidNameException 
 	 */
-	private Name getEscapedJndiName(String name) throws InvalidNameException {
+	private Name getEscapedJndiName(final String name) throws InvalidNameException {
 		return new CompositeName(name.replace("'", "\\'").replace("\"", ""));
 	}
 
@@ -232,7 +232,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public void unbind(String name) throws NamingException {
+	public void unbind(final String name) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -249,7 +249,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public void rename(String oldName, String newName) throws NamingException {
+	public void rename(final String oldName, final String newName) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -267,7 +267,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
+	public NamingEnumeration<NameClassPair> list(final String name) throws NamingException {
 		return list(getEscapedJndiName(name));
 	}
 
@@ -285,11 +285,11 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<NameClassPair> list(Name name) throws NamingException {
+	public NamingEnumeration<NameClassPair> list(final Name name) throws NamingException {
 		if (name.isEmpty()) {
 			return new NamingContextEnumeration(list(entries).iterator());
 		}
-		Entry entry = treeLookup(name);
+		final Entry entry = treeLookup(name);
 		if (entry == null) {
 			throw new NameNotFoundException(sm.getString("resources.notFound", name));
 		}
@@ -310,15 +310,15 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	protected List<NamingEntry> doListBindings(String strName) throws NamingException {
+	protected List<NamingEntry> doListBindings(final String strName) throws NamingException {
 
-		Name name = getEscapedJndiName(strName);
+		final Name name = getEscapedJndiName(strName);
 
 		if (name.isEmpty()) {
 			return list(entries);
 		}
 
-		Entry entry = treeLookup(name);
+		final Entry entry = treeLookup(name);
 		if (entry == null) {
 			return null;
 		}
@@ -352,7 +352,7 @@ class ZipDirContext extends BaseDirContext {
 	 * not name a context, or does not name a context of the appropriate type
 	 */
 	@Override
-	public void destroySubcontext(String name) throws NamingException {
+	public void destroySubcontext(final String name) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -367,7 +367,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public Object lookupLink(String name) throws NamingException {
+	public Object lookupLink(final String name) throws NamingException {
 		// Note : Links are not supported
 		return lookup(name);
 	}
@@ -409,7 +409,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	protected Attributes doGetAttributes(String name, String[] attrIds) throws NamingException {
+	protected Attributes doGetAttributes(final String name, final String[] attrIds) throws NamingException {
 		return getAttributes(getEscapedJndiName(name), attrIds);
 	}
 
@@ -422,7 +422,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public Attributes getAttributes(Name name, String[] attrIds) throws NamingException {
+	public Attributes getAttributes(final Name name, final String[] attrIds) throws NamingException {
 
 		Entry entry = null;
 		if (name.isEmpty()) {
@@ -434,9 +434,9 @@ class ZipDirContext extends BaseDirContext {
 			return null;
 		}
 
-		ZipEntry zipEntry = entry.getEntry();
+		final ZipEntry zipEntry = entry.getEntry();
 
-		ResourceAttributes attrs = new ResourceAttributes();
+		final ResourceAttributes attrs = new ResourceAttributes();
 		attrs.setCreationDate(new Date(zipEntry.getTime()));
 		attrs.setName(entry.getName());
 		if (!zipEntry.isDirectory()) {
@@ -466,7 +466,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public void modifyAttributes(String name, int mod_op, Attributes attrs) throws NamingException {
+	public void modifyAttributes(final String name, final int mod_op, final Attributes attrs) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -485,7 +485,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public void modifyAttributes(String name, ModificationItem[] mods) throws NamingException {
+	public void modifyAttributes(final String name, final ModificationItem[] mods) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -506,7 +506,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public void bind(String name, Object obj, Attributes attrs) throws NamingException {
+	public void bind(final String name, final Object obj, final Attributes attrs) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -529,7 +529,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public void rebind(String name, Object obj, Attributes attrs) throws NamingException {
+	public void rebind(final String name, final Object obj, final Attributes attrs) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -552,7 +552,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public DirContext createSubcontext(String name, Attributes attrs) throws NamingException {
+	public DirContext createSubcontext(final String name, final Attributes attrs) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -570,7 +570,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public DirContext getSchema(String name) throws NamingException {
+	public DirContext getSchema(final String name) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -586,7 +586,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public DirContext getSchemaClassDefinition(String name) throws NamingException {
+	public DirContext getSchemaClassDefinition(final String name) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -608,8 +608,8 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<SearchResult> search(String name, Attributes matchingAttributes,
-			String[] attributesToReturn) throws NamingException {
+	public NamingEnumeration<SearchResult> search(final String name, final Attributes matchingAttributes,
+			final String[] attributesToReturn) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -629,7 +629,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<SearchResult> search(String name, Attributes matchingAttributes) throws NamingException {
+	public NamingEnumeration<SearchResult> search(final String name, final Attributes matchingAttributes) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -654,7 +654,7 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<SearchResult> search(String name, String filter, SearchControls cons)
+	public NamingEnumeration<SearchResult> search(final String name, final String filter, final SearchControls cons)
 			throws NamingException {
 		throw new OperationNotSupportedException();
 	}
@@ -684,8 +684,8 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<SearchResult> search(String name, String filterExpr, Object[] filterArgs,
-			SearchControls cons) throws NamingException {
+	public NamingEnumeration<SearchResult> search(final String name, final String filterExpr, final Object[] filterArgs,
+			final SearchControls cons) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -694,7 +694,7 @@ class ZipDirContext extends BaseDirContext {
 	/**
 	 * Normalize the name of an entry read from the Zip.
 	 */
-	protected String normalize(ZipEntry entry) {
+	protected String normalize(final ZipEntry entry) {
 
 		String result = "/" + entry.getName();
 		if (entry.isDirectory()) {
@@ -711,33 +711,33 @@ class ZipDirContext extends BaseDirContext {
 
 		try {
 
-			Enumeration<? extends ZipEntry> entryList = base.entries();
+			final Enumeration<? extends ZipEntry> entryList = base.entries();
 			entries = new Entry("/", new ZipEntry("/"));
 
 			while (entryList.hasMoreElements()) {
 
-				ZipEntry entry = entryList.nextElement();
-				String name = normalize(entry);
-				int pos = name.lastIndexOf('/');
+				final ZipEntry entry = entryList.nextElement();
+				final String name = normalize(entry);
+				final int pos = name.lastIndexOf('/');
 				// Check that parent entries exist and, if not, create them.
 				// This fixes a bug for war files that don't record separate
 				// zip entries for the directories.
 				int currentPos = -1;
 				int lastPos = 0;
 				while ((currentPos = name.indexOf('/', lastPos)) != -1) {
-					Name parentName = getEscapedJndiName(name.substring(0, lastPos));
-					Name childName = getEscapedJndiName(name.substring(0, currentPos));
-					String entryName = name.substring(lastPos, currentPos);
+					final Name parentName = getEscapedJndiName(name.substring(0, lastPos));
+					final Name childName = getEscapedJndiName(name.substring(0, currentPos));
+					final String entryName = name.substring(lastPos, currentPos);
 					// Parent should have been created in last cycle through
 					// this loop
-					Entry parent = treeLookup(parentName);
+					final Entry parent = treeLookup(parentName);
 					Entry child = treeLookup(childName);
 					if (child == null) {
 						// Create a new entry for missing entry and strip off
 						// the leading '/' character and appended on by the
 						// normalize method and add '/' character to end to
 						// signify that it is a directory entry
-						String zipName = name.substring(1, currentPos) + "/";
+						final String zipName = name.substring(1, currentPos) + "/";
 						child = new Entry(entryName, new ZipEntry(zipName));
 						if (parent != null) {
 							parent.addChild(child);
@@ -746,17 +746,17 @@ class ZipDirContext extends BaseDirContext {
 					// Increment lastPos
 					lastPos = currentPos + 1;
 				}
-				String entryName = name.substring(pos + 1, name.length());
-				Name compositeName = getEscapedJndiName(name.substring(0, pos));
-				Entry parent = treeLookup(compositeName);
-				Entry child = new Entry(entryName, entry);
+				final String entryName = name.substring(pos + 1, name.length());
+				final Name compositeName = getEscapedJndiName(name.substring(0, pos));
+				final Entry parent = treeLookup(compositeName);
+				final Entry child = new Entry(entryName, entry);
 				if (parent != null) {
 					parent.addChild(child);
 				}
 
 			}
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// Ignore
 		}
 
@@ -765,7 +765,7 @@ class ZipDirContext extends BaseDirContext {
 	/**
 	 * Entry tree lookup.
 	 */
-	protected Entry treeLookup(Name name) {
+	protected Entry treeLookup(final Name name) {
 		if (name.isEmpty() || entries == null) {
 			return entries;
 		}
@@ -785,15 +785,15 @@ class ZipDirContext extends BaseDirContext {
 	/**
 	 * List children as objects.
 	 */
-	protected ArrayList<NamingEntry> list(Entry entry) {
+	protected ArrayList<NamingEntry> list(final Entry entry) {
 
-		ArrayList<NamingEntry> entries = new ArrayList<NamingEntry>();
-		Entry[] children = entry.getChildren();
+		final ArrayList<NamingEntry> entries = new ArrayList<NamingEntry>();
+		final Entry[] children = entry.getChildren();
 		Arrays.sort(children);
 		NamingEntry namingEntry = null;
 
 		for (int i = 0; i < children.length; i++) {
-			ZipEntry current = children[i].getEntry();
+			final ZipEntry current = children[i].getEntry();
 			Object object = null;
 			if (current.isDirectory()) {
 				object = new ZipDirContext(base, children[i]);
@@ -817,7 +817,7 @@ class ZipDirContext extends BaseDirContext {
 
 		// -------------------------------------------------------- Constructor
 
-		public Entry(String name, ZipEntry entry) {
+		public Entry(final String name, final ZipEntry entry) {
 			this.name = name;
 			this.entry = entry;
 		}
@@ -833,7 +833,7 @@ class ZipDirContext extends BaseDirContext {
 		// ----------------------------------------------------- Public Methods
 
 		@Override
-		public int compareTo(Object o) {
+		public int compareTo(final Object o) {
 			if (!(o instanceof Entry)) {
 				return (+1);
 			}
@@ -841,7 +841,7 @@ class ZipDirContext extends BaseDirContext {
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(final Object o) {
 			if (!(o instanceof Entry)) {
 				return false;
 			}
@@ -861,8 +861,8 @@ class ZipDirContext extends BaseDirContext {
 			return name;
 		}
 
-		public void addChild(Entry entry) {
-			Entry[] newChildren = new Entry[children.length + 1];
+		public void addChild(final Entry entry) {
+			final Entry[] newChildren = new Entry[children.length + 1];
 			for (int i = 0; i < children.length; i++) {
 				newChildren[i] = children[i];
 			}
@@ -874,7 +874,7 @@ class ZipDirContext extends BaseDirContext {
 			return children;
 		}
 
-		public Entry getChild(String name) {
+		public Entry getChild(final String name) {
 			for (int i = 0; i < children.length; i++) {
 				if (children[i].name.equals(name)) {
 					return children[i];
@@ -895,7 +895,7 @@ class ZipDirContext extends BaseDirContext {
 
 		// -------------------------------------------------------- Constructor
 
-		public WARResource(ZipEntry entry) {
+		public WARResource(final ZipEntry entry) {
 			this.entry = entry;
 		}
 
@@ -914,11 +914,11 @@ class ZipDirContext extends BaseDirContext {
 		public InputStream streamContent() throws IOException {
 			try {
 				if (binaryContent == null) {
-					InputStream is = base.getInputStream(entry);
+					final InputStream is = base.getInputStream(entry);
 					inputStream = is;
 					return is;
 				}
-			} catch (ZipException e) {
+			} catch (final ZipException e) {
 				throw new IOException(e.getMessage(), e);
 			}
 			return super.streamContent();

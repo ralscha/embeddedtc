@@ -80,10 +80,10 @@ public class EmbeddedTomcat {
 	private boolean removeDefaultServlet;
 	private boolean privileged;
 	private boolean silent;
-	private List<Artifact> resourceArtifacts;
-	private Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializers;
-	private List<ContextEnvironment> contextEnvironments;
-	private List<ContextResource> contextResources;
+	private final List<Artifact> resourceArtifacts;
+	private final Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializers;
+	private final List<ContextEnvironment> contextEnvironments;
+	private final List<ContextResource> contextResources;
 	private File pomFile;
 	private File m2Directory;
 
@@ -95,10 +95,20 @@ public class EmbeddedTomcat {
 	 * 
 	 * @param args program arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		new EmbeddedTomcat().startAndWait();
 	}
 
+	/**
+	 * Convenient method to create a embedded Tomcat that listens on port 8080 and
+	 * with a context path of "/"
+	 * 
+	 * @return EmbeddedTomcat the embedded tomcat
+	 */
+	public static EmbeddedTomcat create() {
+		return new EmbeddedTomcat();
+	}
+	
 	/**
 	 * Creates an embedded Tomcat with context path "/" and port 8080. 
 	 * Context directory points to current directory + /src/main/webapp
@@ -119,7 +129,7 @@ public class EmbeddedTomcat {
 	 *  
 	 * @see 	#setContextDirectory(String)
 	 */
-	public EmbeddedTomcat(int port) {
+	public EmbeddedTomcat(final int port) {
 		this("/", port);
 	}
 
@@ -132,7 +142,7 @@ public class EmbeddedTomcat {
 	 * 
 	 * @see 	#setContextDirectory(String) 
 	 */
-	public EmbeddedTomcat(String contextPath) {
+	public EmbeddedTomcat(final String contextPath) {
 		this(contextPath, 8080);
 	}
 
@@ -141,41 +151,59 @@ public class EmbeddedTomcat {
 	 * Context directory points to current directory + /src/main/webapp
 	 * Change context directory with the method <code>setContextDirectory(String)</code>
 	 * 
-	 * @param contextPath has to begin with / 
+	 * @param contextPath has to start with / 
 	 * @param port ip port the server is listening
 	 *  
 	 * @see 	EmbeddedTomcat#setContextDirectory(String)
 	 */
-	public EmbeddedTomcat(String contextPath, int port) {
+	public EmbeddedTomcat(final String contextPath, final int port) {
+		tomcat = null;
+		
+		setContextPath(contextPath);
+		setPort(port);
+		setPomFile(null);
+		setM2Directory(null);
+		setTempDirectory(null);
+		setShutdownPort(port + 1000);
+		setSecondsToWaitBeforePortBecomesAvailable(10);
+		setPrivileged(false);
+		setSilent(false);
+		setContextDirectory(null);
+		
+		contextEnvironments = new ArrayList<ContextEnvironment>();
+		contextResources = new ArrayList<ContextResource>();
+		initializers = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
+		resourceArtifacts = new ArrayList<Artifact>();	
+		removeDefaultServlet = false;
+	}
+	
+	/**
+	 * Sets the port the server is listening for http requests
+	 * 
+	 * @param port The new port
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setPort(final int port) {
+		this.port = port;
+		return this;
+	}
+	
+	/**
+	 * Sets the contextPath for the webapplication
+	 * 
+	 * @param contextPath The new contextPath. Has to start with / 
+	 * @return The embedded Tomcat 
+	 */
+	public EmbeddedTomcat setContextPath(final String contextPath) {
+		
 		if (contextPath != null && !contextPath.startsWith("/")) {
 			throw new IllegalArgumentException("contextPath does not start with /");
-		}
-
-		this.pomFile = null;
-		this.m2Directory = null;
-		this.contextEnvironments = new ArrayList<ContextEnvironment>();
-		this.contextResources = new ArrayList<ContextResource>();
-		this.initializers = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
-		this.resourceArtifacts = new ArrayList<Artifact>();
-		this.contextDirectory = null;
-		this.tempDirectory = null;
-		this.removeDefaultServlet = false;
-		this.port = port;
-		this.shutdownPort = port + 1000;
-		this.secondsToWaitBeforePortBecomesAvailable = 10;
-		this.privileged = false;
-		this.silent = false;
-
-		this.tomcat = null;
-
-		if (contextPath != null) {
-			this.contextPath = contextPath;
-		} else {
-			this.contextPath = "/";
-		}
-
+		}		
+		
+		this.contextPath = contextPath;
+		return this;
 	}
-
+	
 	/**
 	 * Sets the context directory. Normally this point to the directory
 	 * that hosts the WEB-INF directory. Default value is: current directory + /src/main/webapp
@@ -184,9 +212,11 @@ public class EmbeddedTomcat {
 	 * 
 	 * @param contextDirectory Path name to the directory that contains the 
 	 * 						   web application. 
+	 * @return The embedded Tomcat
 	 */
-	public void setContextDirectory(String contextDirectory) {
+	public EmbeddedTomcat setContextDirectory(final String contextDirectory) {
 		this.contextDirectory = contextDirectory;
+		return this;		
 	}
 
 	/**
@@ -199,9 +229,11 @@ public class EmbeddedTomcat {
 	 * </code>
 	 * 
 	 * @param tempDirectory File object that represents the location of the temp directory 
+	 * @return The embedded Tomcat
 	 */
-	public void setTempDirectory(File tempDirectory) {
+	public EmbeddedTomcat setTempDirectory(final File tempDirectory) {
 		this.tempDirectory = tempDirectory.getAbsolutePath();
+		return this;
 	}
 
 	/**
@@ -211,11 +243,13 @@ public class EmbeddedTomcat {
 	 * automatically if necessary.
 	 * 
 	 * @param name directory name
-	 * 
+	 * @return The embedded Tomcat
+	 *  
 	 * @see EmbeddedTomcat#setTempDirectory(File)
 	 */
-	public void setTempDirectoryName(String name) {
-		this.tempDirectory = new File(".", "target/" + name).getAbsolutePath();
+	public EmbeddedTomcat setTempDirectoryName(final String name) {
+		tempDirectory = new File(".", "target/" + name).getAbsolutePath();
+		return this;
 	}
 
 	/**
@@ -224,9 +258,11 @@ public class EmbeddedTomcat {
 	 * Default value is current directory + /pom.xml  
 	 * 
 	 * @param pomFile File object that points to the maven pom file (pom.xml)
+	 * @return The embedded Tomcat
 	 */
-	public void setPomFile(File pomFile) {
+	public EmbeddedTomcat setPomFile(final File pomFile) {
 		this.pomFile = pomFile;
+		return this;
 	}
 
 	/**
@@ -235,10 +271,13 @@ public class EmbeddedTomcat {
 	 * <code>
 	 * System.getProperty("user.home") + /.m2/repository/
 	 * </code>
+	 * 
 	 * @param m2Directory File object that points to the Maven local repository directory
+	 * @return The embedded Tomcat
 	 */
-	public void setM2Directory(File m2Directory) {
+	public EmbeddedTomcat setM2Directory(final File m2Directory) {
 		this.m2Directory = m2Directory;
+		return this;
 	}
 
 	/**
@@ -247,18 +286,23 @@ public class EmbeddedTomcat {
 	 * with a mapping of "/"
 	 * 
 	 * @see EmbeddedTomcat#addInitializer(Class, Class)
+	 * @return The embedded Tomcat
 	 */
-	public void removeDefaultServlet() {
-		this.removeDefaultServlet = true;
+	public EmbeddedTomcat removeDefaultServlet() {
+		removeDefaultServlet = true;
+		return this;
 	}
 
 	/**
 	 * The EmbeddedTomcat opens as default a shutdown port on port + 1000
 	 * with the shutdown command <code>EMBEDDED_TC_SHUTDOWN</code>
 	 * Calling this method disables adding the shutdown hook.
+	 * 
+	 * @return The embedded Tomcat
 	 */
-	public void dontAddShutdownHook() {
-		this.shutdownPort = null;
+	public EmbeddedTomcat dontAddShutdownHook() {
+		shutdownPort = null;
+		return this;
 	}
 
 	/**
@@ -268,9 +312,11 @@ public class EmbeddedTomcat {
 	 * for the specified number of seconds
 	 * 
 	 * @param seconds number of seconds
+	 * @return The embedded Tomcat
 	 */
-	public void setSecondsToWaitBeforePortBecomesAvailable(int seconds) {
-		this.secondsToWaitBeforePortBecomesAvailable = seconds;
+	public EmbeddedTomcat setSecondsToWaitBeforePortBecomesAvailable(final int seconds) {
+		secondsToWaitBeforePortBecomesAvailable = seconds;
+		return this;
 	}
 
 	/**
@@ -278,20 +324,24 @@ public class EmbeddedTomcat {
 	 * Default is port + 1000
 	 * 
 	 * @param shutdownPort the shutdown port 
+	 * @return The embedded Tomcat	 * 
 	 * 
 	 * @see EmbeddedTomcat#dontAddShutdownHook()
 	 */
-	public void setShutdownPort(int shutdownPort) {
+	public EmbeddedTomcat setShutdownPort(final int shutdownPort) {
 		this.shutdownPort = shutdownPort;
+		return this;
 	}
 
 	/**
 	 * Set the privileged flag for this web application.
 	 *
 	 * @param privileged The new privileged flag
+	 * @return The embedded Tomcat
 	 */
-	public void setPrivileged(boolean privileged) {
+	public EmbeddedTomcat setPrivileged(final boolean privileged) {
 		this.privileged = privileged;
+		return this;
 	}
 
 	/**
@@ -299,20 +349,25 @@ public class EmbeddedTomcat {
 	 * If true Tomcat no longer prints any log messages
 	 * 
 	 * @param silent The new silent flag
+	 * @return The embedded Tomcat
 	 */
-	public void setSilent(boolean silent) {
+	public EmbeddedTomcat setSilent(final boolean silent) {
 		this.silent = silent;
+		return this;
 	}
 
 	/**
 	 * Adds all the dependencies specified in the pom.xml (except scope provided)
 	 * to the context as a resource jar. A resource jar contains
 	 * static resources in the directory META-INF/resources
-	 * < 
+	 
+	 * @return The embedded Tomcat
+	 * 
 	 * @see Context#addResourceJarUrl(URL)
 	 */
-	public void addAllDependenciesAsResourceJar() {
-		this.resourceArtifacts.add(new AllArtifact());
+	public EmbeddedTomcat addAllDependenciesAsResourceJar() {
+		resourceArtifacts.add(new AllArtifact());
+		return this;
 	}
 
 	/**
@@ -323,12 +378,14 @@ public class EmbeddedTomcat {
 	 * 
 	 * @param groupId the maven groupId name
 	 * @param artifact the maven artifact name
-	 * 
+	 * @return The embedded Tomcat
+	 
 	 * @see Context#addResourceJarUrl(URL)
 	 * @see EmbeddedTomcat#addAllDependenciesAsResourceJar()
 	 */
-	public void addDependencyAsResourceJar(String groupId, String artifact) {
-		this.resourceArtifacts.add(new Artifact(groupId, artifact));
+	public EmbeddedTomcat addDependencyAsResourceJar(final String groupId, final String artifact) {
+		resourceArtifacts.add(new Artifact(groupId, artifact));
+		return this;
 	}
 
 	/**
@@ -342,20 +399,21 @@ public class EmbeddedTomcat {
 	 * If the initializer adds a servlet to the default root ("/")  
 	 * call <code>removeDefaultServlet()</code>
 	 * 
-	 * 
 	 * @param containerInitializer class that implements ServletContainerInitializer
 	 * @param handlesClass any class that is handled by the initializer 
+	 * @return The embedded Tomcat
 	 * 
 	 * @see Context#addServletContainerInitializer(ServletContainerInitializer, Set)
 	 * @see EmbeddedTomcat#removeDefaultServlet()
 	 */
-	public void addInitializer(Class<? extends ServletContainerInitializer> containerInitializer, Class<?> handlesClass) {
+	public EmbeddedTomcat addInitializer(final Class<? extends ServletContainerInitializer> containerInitializer, final Class<?> handlesClass) {
 		Set<Class<?>> classes = initializers.get(containerInitializer);
 		if (classes == null) {
 			classes = new HashSet<Class<?>>();
 			initializers.put(containerInitializer, classes);
 		}
 		classes.add(handlesClass);
+		return this;
 	}
 
 	/**
@@ -381,14 +439,16 @@ public class EmbeddedTomcat {
 	 * 
 	 * 
 	 * @param env context environment variable
+	 * @return The embedded Tomcat
 	 * 
 	 * @see ContextEnvironment
 	 * @see NamingResources#addEnvironment(ContextEnvironment)
 	 * @see EmbeddedTomcat#addContextEnvironment(String, String, String)
 	 * @see EmbeddedTomcat#addContextEnvironmentString(String, String)
 	 */
-	public void addContextEnvironment(ContextEnvironment env) {
+	public EmbeddedTomcat addContextEnvironment(final ContextEnvironment env) {
 		contextEnvironments.add(env);
+		return this;
 	}
 
 	/**
@@ -425,12 +485,14 @@ public class EmbeddedTomcat {
 	 * </pre> 
 	 * 
 	 * @param res resource object
+	 * @return The embedded Tomcat
 	 * 
 	 * @see ContextResource
 	 * @see NamingResources#addResource(ContextResource) 
 	 */
-	public void addContextResource(ContextResource res) {
+	public EmbeddedTomcat addContextResource(final ContextResource res) {
 		contextResources.add(res);
+		return this;
 	}
 
 	/**
@@ -455,18 +517,20 @@ public class EmbeddedTomcat {
 	 * @param name name of the context environment
 	 * @param value value of the context environment
 	 * @param type type of the context environment
+	 * @return The embedded Tomcat
 	 * 
 	 * @see ContextEnvironment
 	 * @see NamingResources#addEnvironment(ContextEnvironment) 
 	 * @see EmbeddedTomcat#addContextEnvironment(ContextEnvironment)
 	 * @see EmbeddedTomcat#addContextEnvironmentString(String, String)
 	 */
-	public void addContextEnvironment(String name, String value, String type) {
-		ContextEnvironment env = new ContextEnvironment();
+	public EmbeddedTomcat addContextEnvironment(final String name, final String value, final String type) {
+		final ContextEnvironment env = new ContextEnvironment();
 		env.setType(type);
 		env.setName(name);
 		env.setValue(value);
 		addContextEnvironment(env);
+		return this;
 	}
 
 	/**
@@ -479,14 +543,16 @@ public class EmbeddedTomcat {
 	 * 
 	 * @param name name of the context environment
 	 * @param value value of the context environment
+	 * @return The embedded Tomcat
 	 * 
 	 * @see ContextEnvironment
 	 * @see NamingResources#addEnvironment(ContextEnvironment) 
 	 * @see EmbeddedTomcat#addContextEnvironment(ContextEnvironment)
 	 * @see EmbeddedTomcat#addContextEnvironment(String, String, String)
 	 */
-	public void addContextEnvironmentString(String name, String value) {
+	public EmbeddedTomcat addContextEnvironmentString(final String name, final String value) {
 		addContextEnvironment(name, value, "java.lang.String");
+		return this;
 	}
 
 	/**
@@ -494,21 +560,35 @@ public class EmbeddedTomcat {
 	 * text file. 
 	 * 
 	 * @param contextFile Location to a context file
+	 * @return The embedded Tomcat
 	 */
-	public void addContextEnvironmentAndResourceFromFile(final File contextFile) {
+	public EmbeddedTomcat addContextEnvironmentAndResourceFromFile(final File contextFile) {
 		try {
-			ContextConfig cc = (ContextConfig) ContextConfig.createDigester().parse(contextFile);
+			final ContextConfig cc = (ContextConfig) ContextConfig.createDigester().parse(contextFile);
 			if (cc != null) {
 				contextEnvironments.addAll(cc.getEnvironments());
 				contextResources.addAll(cc.getResources());
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
-		} catch (SAXException e) {
+		} catch (final SAXException e) {
 			throw new RuntimeException(e);
 		}
+		return this;
 	}
 
+	/**
+	 * Read ContextEnvironment and ContextResource definition from a 
+	 * text file. 
+	 * 
+	 * @param contextFile Location to a context file
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat addContextEnvironmentAndResourceFromFile(final String contextFile) {
+		addContextEnvironmentAndResourceFromFile(new File(contextFile));
+		return this;
+	}
+	
 	/**
 	 * Starts the embedded Tomcat and do not wait for incoming requests.
 	 * Returns immediately if the configured port is in use.
@@ -529,15 +609,15 @@ public class EmbeddedTomcat {
 		start(true);
 	}
 
-	private void start(boolean await) {
+	private void start(final boolean await) {
 
 		//try to shutdown a previous Tomcat
 		sendShutdownCommand();
 
 		try {
-			ServerSocket srv = new ServerSocket(port);
+			final ServerSocket srv = new ServerSocket(port);
 			srv.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			log.error("PORT " + port + " ALREADY IN USE");
 			return;
 		}
@@ -572,31 +652,31 @@ public class EmbeddedTomcat {
 		final Context ctx;
 		try {
 			ctx = tomcat.addWebapp(contextPath, contextDir);
-		} catch (ServletException e) {
+		} catch (final ServletException e) {
 			throw new RuntimeException(e);
 		}
 
 		if (!resourceArtifacts.isEmpty()) {
-			FileDirContext fileDirContext = new FileDirContext();
+			final FileDirContext fileDirContext = new FileDirContext();
 			ctx.setResources(fileDirContext);
 
 			List<File> jarFiles;
 			try {
 				jarFiles = findJarFiles();
 
-				for (File jarFile : jarFiles) {
-					ZipFile zipFile = new ZipFile(jarFile);
-					ZipEntry entry = zipFile.getEntry("/");
-					ZipDirContext zipDirContext = new ZipDirContext(zipFile, new ZipDirContext.Entry("/", entry));
+				for (final File jarFile : jarFiles) {
+					final ZipFile zipFile = new ZipFile(jarFile);
+					final ZipEntry entry = zipFile.getEntry("/");
+					final ZipDirContext zipDirContext = new ZipDirContext(zipFile, new ZipDirContext.Entry("/", entry));
 					zipDirContext.loadEntries();
 					fileDirContext.addAltDirContext(zipDirContext);
 				}
 
-			} catch (ParserConfigurationException e) {
+			} catch (final ParserConfigurationException e) {
 				throw new RuntimeException(e);
-			} catch (SAXException e) {
+			} catch (final SAXException e) {
 				throw new RuntimeException(e);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new RuntimeException(e);
 			}
 
@@ -610,18 +690,18 @@ public class EmbeddedTomcat {
 			tomcat.enableNaming();
 		}
 
-		for (ContextEnvironment env : contextEnvironments) {
+		for (final ContextEnvironment env : contextEnvironments) {
 			ctx.getNamingResources().addEnvironment(env);
 		}
 
-		for (ContextResource res : contextResources) {
+		for (final ContextResource res : contextResources) {
 			ctx.getNamingResources().addResource(res);
 		}
 
 		if (removeDefaultServlet) {
 			ctx.addLifecycleListener(new LifecycleListener() {
 				@Override
-				public void lifecycleEvent(LifecycleEvent event) {
+				public void lifecycleEvent(final LifecycleEvent event) {
 					if (Lifecycle.BEFORE_START_EVENT.equals(event.getType())) {
 						ctx.removeServletMapping("/");
 					}
@@ -630,12 +710,12 @@ public class EmbeddedTomcat {
 		}
 
 		if (!initializers.isEmpty()) {
-			for (Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> entry : initializers.entrySet()) {
+			for (final Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> entry : initializers.entrySet()) {
 				try {
 					ctx.addServletContainerInitializer(entry.getKey().newInstance(), entry.getValue());
-				} catch (InstantiationException e) {
+				} catch (final InstantiationException e) {
 					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
+				} catch (final IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
 			}
@@ -643,7 +723,7 @@ public class EmbeddedTomcat {
 
 		try {
 			tomcat.start();
-		} catch (LifecycleException e) {
+		} catch (final LifecycleException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -661,7 +741,7 @@ public class EmbeddedTomcat {
 		if (tomcat != null) {
 			try {
 				tomcat.stop();
-			} catch (LifecycleException e) {
+			} catch (final LifecycleException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -670,8 +750,8 @@ public class EmbeddedTomcat {
 	private void sendShutdownCommand() {
 		if (shutdownPort != null) {
 			try {
-				Socket socket = new Socket("localhost", shutdownPort);
-				OutputStream stream = socket.getOutputStream();
+				final Socket socket = new Socket("localhost", shutdownPort);
+				final OutputStream stream = socket.getOutputStream();
 
 				for (int i = 0; i < SHUTDOWN_COMMAND.length(); i++) {
 					stream.write(SHUTDOWN_COMMAND.charAt(i));
@@ -680,12 +760,12 @@ public class EmbeddedTomcat {
 				stream.flush();
 				stream.close();
 				socket.close();
-			} catch (UnknownHostException e) {
+			} catch (final UnknownHostException e) {
 				if (!silent) {
 					log.debug(e);
 				}
 				return;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				if (!silent) {
 					log.debug(e);
 				}
@@ -696,15 +776,15 @@ public class EmbeddedTomcat {
 			int count = 0;
 			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
 				try {
-					ServerSocket srv = new ServerSocket(port);
+					final ServerSocket srv = new ServerSocket(port);
 					srv.close();
 					return;
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					count++;
 				}
 				try {
 					TimeUnit.MILLISECONDS.sleep(500);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					return;
 				}
 			}
@@ -722,56 +802,56 @@ public class EmbeddedTomcat {
 			// Install slf4j bridge handler
 			final Method method = clazz.getMethod("install", (Class<?>) null);
 			method.invoke(null);
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			//do nothing
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			throw new RuntimeException(e);
-		} catch (InvocationTargetException e) {
+		} catch (final InvocationTargetException e) {
 			throw new RuntimeException(e);
-		} catch (SecurityException e) {
+		} catch (final SecurityException e) {
 			throw new RuntimeException(e);
-		} catch (NoSuchMethodException e) {
+		} catch (final NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private List<File> findJarFiles() throws ParserConfigurationException, SAXException, IOException {
 
-		File m2Dir = this.m2Directory;
+		File m2Dir = m2Directory;
 		if (m2Dir == null) {
-			File homeDir = new File(System.getProperty("user.home"));
+			final File homeDir = new File(System.getProperty("user.home"));
 			m2Dir = new File(homeDir, ".m2/repository/");
 		}
 
-		List<File> jars = new ArrayList<File>();
+		final List<File> jars = new ArrayList<File>();
 
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
+		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		final DocumentBuilder db = dbf.newDocumentBuilder();
 
-		File pom = this.pomFile;
+		File pom = pomFile;
 		if (pom == null) {
 			pom = new File("./pom.xml");
 		}
 
-		Document doc = db.parse(pom);
+		final Document doc = db.parse(pom);
 
-		Map<String, String> properties = new HashMap<String, String>();
-		NodeList propertiesNodeList = doc.getElementsByTagName("properties");
+		final Map<String, String> properties = new HashMap<String, String>();
+		final NodeList propertiesNodeList = doc.getElementsByTagName("properties");
 		if (propertiesNodeList != null && propertiesNodeList.item(0) != null) {
-			NodeList propertiesChildren = propertiesNodeList.item(0).getChildNodes();
+			final NodeList propertiesChildren = propertiesNodeList.item(0).getChildNodes();
 			for (int i = 0; i < propertiesChildren.getLength(); i++) {
-				Node node = propertiesChildren.item(i);
+				final Node node = propertiesChildren.item(i);
 				if (node instanceof Element) {
 					properties.put("${" + node.getNodeName() + "}", stripWhitespace(node.getTextContent()));
 				}
 			}
 		}
 
-		NodeList nodeList = doc.getElementsByTagName("dependency");
+		final NodeList nodeList = doc.getElementsByTagName("dependency");
 		for (int i = 0; i < nodeList.getLength(); i++) {
-			Element node = (Element) nodeList.item(i);
+			final Element node = (Element) nodeList.item(i);
 			String groupId = node.getElementsByTagName("groupId").item(0).getTextContent();
 			String artifact = node.getElementsByTagName("artifactId").item(0).getTextContent();
 			String version = node.getElementsByTagName("version").item(0).getTextContent();
@@ -787,14 +867,14 @@ public class EmbeddedTomcat {
 			if (isIncluded(groupId, artifact)) {
 
 				String scope = null;
-				NodeList scopeNode = node.getElementsByTagName("scope");
+				final NodeList scopeNode = node.getElementsByTagName("scope");
 				if (scopeNode != null && scopeNode.item(0) != null) {
 					scope = stripWhitespace(scopeNode.item(0).getTextContent());
 				}
 
 				if (scope == null || !scope.equals("provided")) {
 					groupId = groupId.replace(".", "/");
-					String artifactFileName = groupId + "/" + artifact + "/" + version + "/" + artifact + "-" + version
+					final String artifactFileName = groupId + "/" + artifact + "/" + version + "/" + artifact + "-" + version
 							+ ".jar";
 
 					jars.add(new File(m2Dir, artifactFileName));
@@ -806,9 +886,9 @@ public class EmbeddedTomcat {
 		return jars;
 	}
 
-	private boolean isIncluded(String groupId, String artifactId) {
+	private boolean isIncluded(final String groupId, final String artifactId) {
 
-		for (Artifact artifact : resourceArtifacts) {
+		for (final Artifact artifact : resourceArtifacts) {
 			if (artifact.is(groupId, artifactId)) {
 				return true;
 			}
@@ -817,15 +897,15 @@ public class EmbeddedTomcat {
 
 	}
 
-	private String stripWhitespace(String orig) {
+	private String stripWhitespace(final String orig) {
 		if (orig != null) {
 			return orig.replace("\r", "").replace("\n", "").replace("\t", "").trim();
 		}
 		return orig;
 	}
 
-	private String resolveProperty(String orig, Map<String, String> properties) {
-		String property = properties.get(orig);
+	private String resolveProperty(final String orig, final Map<String, String> properties) {
+		final String property = properties.get(orig);
 		if (property != null) {
 			return property;
 		}
