@@ -163,18 +163,18 @@ public class EmbeddedTomcat {
 		setPort(port);
 		setPomFile(null);
 		setM2Directory(null);
-		setTempDirectory(null);
 		setShutdownPort(port + 1000);
 		setSecondsToWaitBeforePortBecomesAvailable(10);
 		setPrivileged(false);
 		setSilent(false);
 		setContextDirectory(null);
 		
-		contextEnvironments = new ArrayList<ContextEnvironment>();
-		contextResources = new ArrayList<ContextResource>();
-		initializers = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
-		resourceArtifacts = new ArrayList<Artifact>();	
-		removeDefaultServlet = false;
+		this.tempDirectory = null;
+		this.contextEnvironments = new ArrayList<ContextEnvironment>();
+		this.contextResources = new ArrayList<ContextResource>();
+		this.initializers = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
+		this.resourceArtifacts = new ArrayList<Artifact>();	
+		this.removeDefaultServlet = false;
 	}
 	
 	/**
