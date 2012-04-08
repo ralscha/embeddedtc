@@ -46,6 +46,9 @@ public class StartTomcat {
 
 CHANGELOG
 =========
+0.0.6   March 9, 2012
+  * Updated to Tomcat 7.0.27
+  
 0.0.5   March 9, 2012
   * Bugfix: Make class ContextConfig public. Digester cannot access class if it has package visibility
   * All config methods now return the EmbeddedTomcat instance to enable method chaining 
