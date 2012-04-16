@@ -26,15 +26,12 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -52,7 +49,6 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.apache.naming.resources.FileDirContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -81,7 +77,6 @@ public class EmbeddedTomcat {
 	private boolean privileged;
 	private boolean silent;
 	private final List<Artifact> resourceArtifacts;
-	private final Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializers;
 	private final List<ContextEnvironment> contextEnvironments;
 	private final List<ContextResource> contextResources;
 	private File pomFile;
@@ -108,7 +103,7 @@ public class EmbeddedTomcat {
 	public static EmbeddedTomcat create() {
 		return new EmbeddedTomcat();
 	}
-	
+
 	/**
 	 * Creates an embedded Tomcat with context path "/" and port 8080. 
 	 * Context directory points to current directory + /src/main/webapp
@@ -158,7 +153,7 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat(final String contextPath, final int port) {
 		tomcat = null;
-		
+
 		setContextPath(contextPath);
 		setPort(port);
 		setPomFile(null);
@@ -168,15 +163,14 @@ public class EmbeddedTomcat {
 		setPrivileged(false);
 		setSilent(false);
 		setContextDirectory(null);
-		
+
 		this.tempDirectory = null;
 		this.contextEnvironments = new ArrayList<ContextEnvironment>();
 		this.contextResources = new ArrayList<ContextResource>();
-		this.initializers = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
-		this.resourceArtifacts = new ArrayList<Artifact>();	
+		this.resourceArtifacts = new ArrayList<Artifact>();
 		this.removeDefaultServlet = false;
 	}
-	
+
 	/**
 	 * Sets the port the server is listening for http requests
 	 * 
@@ -187,7 +181,7 @@ public class EmbeddedTomcat {
 		this.port = port;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the contextPath for the webapplication
 	 * 
@@ -195,15 +189,15 @@ public class EmbeddedTomcat {
 	 * @return The embedded Tomcat 
 	 */
 	public EmbeddedTomcat setContextPath(final String contextPath) {
-		
+
 		if (contextPath != null && !contextPath.startsWith("/")) {
 			throw new IllegalArgumentException("contextPath does not start with /");
-		}		
-		
+		}
+
 		this.contextPath = contextPath;
 		return this;
 	}
-	
+
 	/**
 	 * Sets the context directory. Normally this point to the directory
 	 * that hosts the WEB-INF directory. Default value is: current directory + /src/main/webapp
@@ -216,7 +210,7 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setContextDirectory(final String contextDirectory) {
 		this.contextDirectory = contextDirectory;
-		return this;		
+		return this;
 	}
 
 	/**
@@ -285,7 +279,6 @@ public class EmbeddedTomcat {
 	 * This is needed if the programm uses an initializer that adds a servlet  
 	 * with a mapping of "/"
 	 * 
-	 * @see EmbeddedTomcat#addInitializer(Class, Class)
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat removeDefaultServlet() {
@@ -385,34 +378,6 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat addDependencyAsResourceJar(final String groupId, final String artifact) {
 		resourceArtifacts.add(new Artifact(groupId, artifact));
-		return this;
-	}
-
-	/**
-	 * Adds a container initializer to the list of initializers.
-	 * <p>
-	 * For example in a spring project adding a SpringServlet Initializer
-	 * <pre>
-	 *  etc.addInitializer(SpringServletContainerInitializer.class, 
-	 *          MyWebAppInitializer.class);
-	 * </pre>
-	 * If the initializer adds a servlet to the default root ("/")  
-	 * call <code>removeDefaultServlet()</code>
-	 * 
-	 * @param containerInitializer class that implements ServletContainerInitializer
-	 * @param handlesClass any class that is handled by the initializer 
-	 * @return The embedded Tomcat
-	 * 
-	 * @see Context#addServletContainerInitializer(ServletContainerInitializer, Set)
-	 * @see EmbeddedTomcat#removeDefaultServlet()
-	 */
-	public EmbeddedTomcat addInitializer(final Class<? extends ServletContainerInitializer> containerInitializer, final Class<?> handlesClass) {
-		Set<Class<?>> classes = initializers.get(containerInitializer);
-		if (classes == null) {
-			classes = new HashSet<Class<?>>();
-			initializers.put(containerInitializer, classes);
-		}
-		classes.add(handlesClass);
 		return this;
 	}
 
@@ -588,7 +553,7 @@ public class EmbeddedTomcat {
 		addContextEnvironmentAndResourceFromFile(new File(contextFile));
 		return this;
 	}
-	
+
 	/**
 	 * Starts the embedded Tomcat and do not wait for incoming requests.
 	 * Returns immediately if the configured port is in use.
@@ -649,16 +614,16 @@ public class EmbeddedTomcat {
 			contextDir = new File(".").getAbsolutePath() + "/src/main/webapp";
 		}
 
+		TargetClassesContext dirContext = new TargetClassesContext();
 		final Context ctx;
 		try {
 			ctx = tomcat.addWebapp(contextPath, contextDir);
+			ctx.setResources(dirContext);
 		} catch (final ServletException e) {
 			throw new RuntimeException(e);
 		}
 
 		if (!resourceArtifacts.isEmpty()) {
-			final FileDirContext fileDirContext = new FileDirContext();
-			ctx.setResources(fileDirContext);
 
 			List<File> jarFiles;
 			try {
@@ -669,7 +634,7 @@ public class EmbeddedTomcat {
 					final ZipEntry entry = zipFile.getEntry("/");
 					final ZipDirContext zipDirContext = new ZipDirContext(zipFile, new ZipDirContext.Entry("/", entry));
 					zipDirContext.loadEntries();
-					fileDirContext.addAltDirContext(zipDirContext);
+					dirContext.addAltDirContext(zipDirContext);
 				}
 
 			} catch (final ParserConfigurationException e) {
@@ -707,18 +672,6 @@ public class EmbeddedTomcat {
 					}
 				}
 			});
-		}
-
-		if (!initializers.isEmpty()) {
-			for (final Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> entry : initializers.entrySet()) {
-				try {
-					ctx.addServletContainerInitializer(entry.getKey().newInstance(), entry.getValue());
-				} catch (final InstantiationException e) {
-					throw new RuntimeException(e);
-				} catch (final IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-			}
 		}
 
 		try {
@@ -874,8 +827,8 @@ public class EmbeddedTomcat {
 
 				if (scope == null || !scope.equals("provided")) {
 					groupId = groupId.replace(".", "/");
-					final String artifactFileName = groupId + "/" + artifact + "/" + version + "/" + artifact + "-" + version
-							+ ".jar";
+					final String artifactFileName = groupId + "/" + artifact + "/" + version + "/" + artifact + "-"
+							+ version + ".jar";
 
 					jars.add(new File(m2Dir, artifactFileName));
 				}
