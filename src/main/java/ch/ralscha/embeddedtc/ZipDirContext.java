@@ -629,7 +629,8 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<SearchResult> search(final String name, final Attributes matchingAttributes) throws NamingException {
+	public NamingEnumeration<SearchResult> search(final String name, final Attributes matchingAttributes)
+			throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
@@ -684,8 +685,8 @@ class ZipDirContext extends BaseDirContext {
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
-	public NamingEnumeration<SearchResult> search(final String name, final String filterExpr, final Object[] filterArgs,
-			final SearchControls cons) throws NamingException {
+	public NamingEnumeration<SearchResult> search(final String name, final String filterExpr,
+			final Object[] filterArgs, final SearchControls cons) throws NamingException {
 		throw new OperationNotSupportedException();
 	}
 
