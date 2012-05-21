@@ -52,7 +52,7 @@ CHANGELOG
 
 0.0.8   May 21, 2012
   * Updated ecj to 3.7.2
-  * Fix bug in installSlf4jBridge. install() does not expect a parameter
+  * Fix bug in installSlf4jBridge. install() does not have a parameter
 
 0.0.7   April 17, 2012
   * Removed addInitializer(..) method.  
