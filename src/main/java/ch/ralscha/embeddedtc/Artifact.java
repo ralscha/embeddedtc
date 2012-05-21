@@ -17,6 +17,7 @@ package ch.ralscha.embeddedtc;
 
 class Artifact {
 	private final String groupId;
+
 	private final String artifact;
 
 	public Artifact(final String groupId, final String artifact) {

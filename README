@@ -1,7 +1,7 @@
 Helper class to simplify starting an embedded Tomcat in a
 development environment for a Maven webapplication project.
 
-Add this dependecy to your project.
+Add this dependency to your project.
 
 		<dependency>
 			<groupId>ch.ralscha</groupId>
@@ -47,8 +47,12 @@ public class StartTomcat {
 CHANGELOG
 =========
 
-0.0.8-SNAPSHOT
+0.0.9-SNAPSHOT
+  no changes yet
+
+0.0.8   May 21, 2012
   * Updated ecj to 3.7.2
+  * Fix bug in installSlf4jBridge. install() does not expect a parameter
 
 0.0.7   April 17, 2012
   * Removed addInitializer(..) method.  

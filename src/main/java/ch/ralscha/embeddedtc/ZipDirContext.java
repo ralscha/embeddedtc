@@ -50,7 +50,7 @@ import org.apache.naming.resources.ResourceAttributes;
 
 /**
  * WAR Directory Context implementation.
- *
+ * 
  * @author Remy Maucherat
  * @version $Id: ZipDirContext.java 1081987 2011-03-15 23:05:53Z markt $
  */
@@ -105,9 +105,8 @@ class ZipDirContext extends BaseDirContext {
 	 * @param docBase The new document root
 	 * 
 	 * @exception IllegalArgumentException if the specified value is not
-	 *  supported by this implementation
-	 * @exception IllegalArgumentException if this would create a
-	 *  malformed URL
+	 *            supported by this implementation
+	 * @exception IllegalArgumentException if this would create a malformed URL
 	 */
 	@Override
 	public void setDocBase(final String docBase) {
@@ -162,7 +161,7 @@ class ZipDirContext extends BaseDirContext {
 	/**
 	 * Return the real path for a given virtual path, if possible; otherwise
 	 * return <code>null</code>.
-	 *
+	 * 
 	 * @param path The path to the desired resource
 	 */
 	@Override
@@ -206,29 +205,29 @@ class ZipDirContext extends BaseDirContext {
 
 	/**
 	 * JNDI treats ' and " as reserved characters therefore they need to be
-	 * escaped as part of converting file names to JNDI names. Note that while
-	 * ' can be used in Windows and Unix file names, " is only valid on Unix.
-	 * This method assumes that the string is currently unquoted.
+	 * escaped as part of converting file names to JNDI names. Note that while '
+	 * can be used in Windows and Unix file names, " is only valid on Unix. This
+	 * method assumes that the string is currently unquoted.
 	 * 
-	 * @return  A valid JNDI name
-	 * @throws InvalidNameException 
+	 * @return A valid JNDI name
+	 * @throws InvalidNameException
 	 */
 	private Name getEscapedJndiName(final String name) throws InvalidNameException {
 		return new CompositeName(name.replace("'", "\\'").replace("\"", ""));
 	}
 
 	/**
-	 * Unbinds the named object. Removes the terminal atomic name in name 
-	 * from the target context--that named by all but the terminal atomic 
-	 * part of name.
+	 * Unbinds the named object. Removes the terminal atomic name in name from
+	 * the target context--that named by all but the terminal atomic part of
+	 * name.
 	 * <p>
-	 * This method is idempotent. It succeeds even if the terminal atomic 
-	 * name is not bound in the target context, but throws 
-	 * NameNotFoundException if any of the intermediate contexts do not exist. 
+	 * This method is idempotent. It succeeds even if the terminal atomic name
+	 * is not bound in the target context, but throws NameNotFoundException if
+	 * any of the intermediate contexts do not exist.
 	 * 
 	 * @param name the name to bind; may not be empty
-	 * @exception NameNotFoundException if an intermediate context does not 
-	 * exist
+	 * @exception NameNotFoundException if an intermediate context does not
+	 *            exist
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -237,15 +236,15 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Binds a new name to the object bound to an old name, and unbinds the 
-	 * old name. Both names are relative to this context. Any attributes 
-	 * associated with the old name become associated with the new name. 
-	 * Intermediate contexts of the old name are not changed.
+	 * Binds a new name to the object bound to an old name, and unbinds the old
+	 * name. Both names are relative to this context. Any attributes associated
+	 * with the old name become associated with the new name. Intermediate
+	 * contexts of the old name are not changed.
 	 * 
 	 * @param oldName the name of the existing binding; may not be empty
 	 * @param newName the name of the new binding; may not be empty
 	 * @exception javax.naming.NameAlreadyBoundException if newName is already
-	 * bound
+	 *            bound
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -254,16 +253,17 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Enumerates the names bound in the named context, along with the class 
-	 * names of objects bound to them. The contents of any subcontexts are 
-	 * not included.
+	 * Enumerates the names bound in the named context, along with the class
+	 * names of objects bound to them. The contents of any subcontexts are not
+	 * included.
 	 * <p>
-	 * If a binding is added to or removed from this context, its effect on 
-	 * an enumeration previously returned is undefined.
+	 * If a binding is added to or removed from this context, its effect on an
+	 * enumeration previously returned is undefined.
 	 * 
 	 * @param name the name of the context to list
-	 * @return an enumeration of the names and class names of the bindings in 
-	 * this context. Each element of the enumeration is of type NameClassPair.
+	 * @return an enumeration of the names and class names of the bindings in
+	 *         this context. Each element of the enumeration is of type
+	 *         NameClassPair.
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -272,16 +272,17 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Enumerates the names bound in the named context, along with the class 
-	 * names of objects bound to them. The contents of any subcontexts are 
-	 * not included.
+	 * Enumerates the names bound in the named context, along with the class
+	 * names of objects bound to them. The contents of any subcontexts are not
+	 * included.
 	 * <p>
-	 * If a binding is added to or removed from this context, its effect on 
-	 * an enumeration previously returned is undefined.
+	 * If a binding is added to or removed from this context, its effect on an
+	 * enumeration previously returned is undefined.
 	 * 
 	 * @param name the name of the context to list
-	 * @return an enumeration of the names and class names of the bindings in 
-	 * this context. Each element of the enumeration is of type NameClassPair.
+	 * @return an enumeration of the names and class names of the bindings in
+	 *         this context. Each element of the enumeration is of type
+	 *         NameClassPair.
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -297,16 +298,15 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Enumerates the names bound in the named context, along with the 
-	 * objects bound to them. The contents of any subcontexts are not 
-	 * included.
+	 * Enumerates the names bound in the named context, along with the objects
+	 * bound to them. The contents of any subcontexts are not included.
 	 * <p>
-	 * If a binding is added to or removed from this context, its effect on 
-	 * an enumeration previously returned is undefined.
+	 * If a binding is added to or removed from this context, its effect on an
+	 * enumeration previously returned is undefined.
 	 * 
 	 * @param strName the name of the context to list
-	 * @return an enumeration of the bindings in this context. 
-	 * Each element of the enumeration is of type Binding.
+	 * @return an enumeration of the bindings in this context. Each element of
+	 *         the enumeration is of type Binding.
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -327,29 +327,30 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Destroys the named context and removes it from the namespace. Any 
-	 * attributes associated with the name are also removed. Intermediate 
+	 * Destroys the named context and removes it from the namespace. Any
+	 * attributes associated with the name are also removed. Intermediate
 	 * contexts are not destroyed.
 	 * <p>
-	 * This method is idempotent. It succeeds even if the terminal atomic 
-	 * name is not bound in the target context, but throws 
-	 * NameNotFoundException if any of the intermediate contexts do not exist. 
+	 * This method is idempotent. It succeeds even if the terminal atomic name
+	 * is not bound in the target context, but throws NameNotFoundException if
+	 * any of the intermediate contexts do not exist.
 	 * 
-	 * In a federated naming system, a context from one naming system may be 
-	 * bound to a name in another. One can subsequently look up and perform 
-	 * operations on the foreign context using a composite name. However, an 
-	 * attempt destroy the context using this composite name will fail with 
-	 * NotContextException, because the foreign context is not a "subcontext" 
-	 * of the context in which it is bound. Instead, use unbind() to remove 
-	 * the binding of the foreign context. Destroying the foreign context 
-	 * requires that the destroySubcontext() be performed on a context from 
-	 * the foreign context's "native" naming system.
+	 * In a federated naming system, a context from one naming system may be
+	 * bound to a name in another. One can subsequently look up and perform
+	 * operations on the foreign context using a composite name. However, an
+	 * attempt destroy the context using this composite name will fail with
+	 * NotContextException, because the foreign context is not a "subcontext" of
+	 * the context in which it is bound. Instead, use unbind() to remove the
+	 * binding of the foreign context. Destroying the foreign context requires
+	 * that the destroySubcontext() be performed on a context from the foreign
+	 * context's "native" naming system.
 	 * 
 	 * @param name the name of the context to be destroyed; may not be empty
-	 * @exception NameNotFoundException if an intermediate context does not 
-	 * exist
+	 * @exception NameNotFoundException if an intermediate context does not
+	 *            exist
 	 * @exception javax.naming.NotContextException if the name is bound but does
-	 * not name a context, or does not name a context of the appropriate type
+	 *            not name a context, or does not name a context of the
+	 *            appropriate type
 	 */
 	@Override
 	public void destroySubcontext(final String name) throws NamingException {
@@ -357,13 +358,13 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Retrieves the named object, following links except for the terminal 
-	 * atomic component of the name. If the object bound to name is not a 
-	 * link, returns the object itself.
+	 * Retrieves the named object, following links except for the terminal
+	 * atomic component of the name. If the object bound to name is not a link,
+	 * returns the object itself.
 	 * 
 	 * @param name the name of the object to look up
-	 * @return the object bound to name, not following the terminal link 
-	 * (if any).
+	 * @return the object bound to name, not following the terminal link (if
+	 *         any).
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -375,18 +376,17 @@ class ZipDirContext extends BaseDirContext {
 	/**
 	 * Retrieves the full name of this context within its own namespace.
 	 * <p>
-	 * Many naming services have a notion of a "full name" for objects in 
-	 * their respective namespaces. For example, an LDAP entry has a 
-	 * distinguished name, and a DNS record has a fully qualified name. This 
-	 * method allows the client application to retrieve this name. The string 
-	 * returned by this method is not a JNDI composite name and should not be 
-	 * passed directly to context methods. In naming systems for which the 
-	 * notion of full name does not make sense, 
-	 * OperationNotSupportedException is thrown.
+	 * Many naming services have a notion of a "full name" for objects in their
+	 * respective namespaces. For example, an LDAP entry has a distinguished
+	 * name, and a DNS record has a fully qualified name. This method allows the
+	 * client application to retrieve this name. The string returned by this
+	 * method is not a JNDI composite name and should not be passed directly to
+	 * context methods. In naming systems for which the notion of full name does
+	 * not make sense, OperationNotSupportedException is thrown.
 	 * 
 	 * @return this context's name in its own namespace; never null
-	 * @exception OperationNotSupportedException if the naming system does 
-	 * not have the notion of a full name
+	 * @exception OperationNotSupportedException if the naming system does not
+	 *            have the notion of a full name
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -397,15 +397,15 @@ class ZipDirContext extends BaseDirContext {
 	// ----------------------------------------------------- DirContext Methods
 
 	/**
-	 * Retrieves selected attributes associated with a named object. 
-	 * See the class description regarding attribute models, attribute type 
-	 * names, and operational attributes.
+	 * Retrieves selected attributes associated with a named object. See the
+	 * class description regarding attribute models, attribute type names, and
+	 * operational attributes.
 	 * 
 	 * @return the requested attributes; never null
 	 * @param name the name of the object from which to retrieve attributes
-	 * @param attrIds the identifiers of the attributes to retrieve. null 
-	 * indicates that all attributes should be retrieved; an empty array 
-	 * indicates that none should be retrieved
+	 * @param attrIds the identifiers of the attributes to retrieve. null
+	 *        indicates that all attributes should be retrieved; an empty array
+	 *        indicates that none should be retrieved
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -414,10 +414,10 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Retrieves all of the attributes associated with a named object. 
+	 * Retrieves all of the attributes associated with a named object.
 	 * 
-	 * @return the set of attributes associated with name. 
-	 * Returns an empty attribute set if name has no attributes; never null.
+	 * @return the set of attributes associated with name. Returns an empty
+	 *         attribute set if name has no attributes; never null.
 	 * @param name the name of the object from which to retrieve attributes
 	 * @exception NamingException if a naming exception is encountered
 	 */
@@ -452,17 +452,17 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Modifies the attributes associated with a named object. The order of 
-	 * the modifications is not specified. Where possible, the modifications 
-	 * are performed atomically.
+	 * Modifies the attributes associated with a named object. The order of the
+	 * modifications is not specified. Where possible, the modifications are
+	 * performed atomically.
 	 * 
 	 * @param name the name of the object whose attributes will be updated
-	 * @param mod_op the modification operation, one of: ADD_ATTRIBUTE, 
-	 * REPLACE_ATTRIBUTE, REMOVE_ATTRIBUTE
-	 * @param attrs the attributes to be used for the modification; may not 
-	 * be null
+	 * @param mod_op the modification operation, one of: ADD_ATTRIBUTE,
+	 *        REPLACE_ATTRIBUTE, REMOVE_ATTRIBUTE
+	 * @param attrs the attributes to be used for the modification; may not be
+	 *        null
 	 * @exception javax.naming.directory.AttributeModificationException if the
-	 * modification cannot be completed successfully
+	 *            modification cannot be completed successfully
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -471,17 +471,17 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Modifies the attributes associated with a named object using an an 
-	 * ordered list of modifications. The modifications are performed in the 
-	 * order specified. Each modification specifies a modification operation 
-	 * code and an attribute on which to operate. Where possible, the 
+	 * Modifies the attributes associated with a named object using an an
+	 * ordered list of modifications. The modifications are performed in the
+	 * order specified. Each modification specifies a modification operation
+	 * code and an attribute on which to operate. Where possible, the
 	 * modifications are performed atomically.
 	 * 
 	 * @param name the name of the object whose attributes will be updated
-	 * @param mods an ordered sequence of modifications to be performed; may 
-	 * not be null
+	 * @param mods an ordered sequence of modifications to be performed; may not
+	 *        be null
 	 * @exception javax.naming.directory.AttributeModificationException if the
-	 * modification cannot be completed successfully
+	 *            modification cannot be completed successfully
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -490,19 +490,19 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Binds a name to an object, along with associated attributes. If attrs 
-	 * is null, the resulting binding will have the attributes associated 
-	 * with obj if obj is a DirContext, and no attributes otherwise. If attrs 
-	 * is non-null, the resulting binding will have attrs as its attributes; 
-	 * any attributes associated with obj are ignored.
+	 * Binds a name to an object, along with associated attributes. If attrs is
+	 * null, the resulting binding will have the attributes associated with obj
+	 * if obj is a DirContext, and no attributes otherwise. If attrs is
+	 * non-null, the resulting binding will have attrs as its attributes; any
+	 * attributes associated with obj are ignored.
 	 * 
 	 * @param name the name to bind; may not be empty
 	 * @param obj the object to bind; possibly null
 	 * @param attrs the attributes to associate with the binding
 	 * @exception javax.naming.NameAlreadyBoundException if name is already
-	 * bound
+	 *            bound
 	 * @exception javax.naming.directory.InvalidAttributesException if some
-	 * "mandatory" attributes of the binding are not supplied
+	 *            "mandatory" attributes of the binding are not supplied
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -511,21 +511,21 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Binds a name to an object, along with associated attributes, 
-	 * overwriting any existing binding. If attrs is null and obj is a 
-	 * DirContext, the attributes from obj are used. If attrs is null and obj 
-	 * is not a DirContext, any existing attributes associated with the object
-	 * already bound in the directory remain unchanged. If attrs is non-null, 
-	 * any existing attributes associated with the object already bound in 
-	 * the directory are removed and attrs is associated with the named 
-	 * object. If obj is a DirContext and attrs is non-null, the attributes 
-	 * of obj are ignored.
+	 * Binds a name to an object, along with associated attributes, overwriting
+	 * any existing binding. If attrs is null and obj is a DirContext, the
+	 * attributes from obj are used. If attrs is null and obj is not a
+	 * DirContext, any existing attributes associated with the object already
+	 * bound in the directory remain unchanged. If attrs is non-null, any
+	 * existing attributes associated with the object already bound in the
+	 * directory are removed and attrs is associated with the named object. If
+	 * obj is a DirContext and attrs is non-null, the attributes of obj are
+	 * ignored.
 	 * 
 	 * @param name the name to bind; may not be empty
 	 * @param obj the object to bind; possibly null
 	 * @param attrs the attributes to associate with the binding
 	 * @exception javax.naming.directory.InvalidAttributesException if some
-	 * "mandatory" attributes of the binding are not supplied
+	 *            "mandatory" attributes of the binding are not supplied
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -534,21 +534,21 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Creates and binds a new context, along with associated attributes. 
-	 * This method creates a new subcontext with the given name, binds it in 
-	 * the target context (that named by all but terminal atomic component of 
-	 * the name), and associates the supplied attributes with the newly 
-	 * created object. All intermediate and target contexts must already 
-	 * exist. If attrs is null, this method is equivalent to 
-	 * Context.createSubcontext().
+	 * Creates and binds a new context, along with associated attributes. This
+	 * method creates a new subcontext with the given name, binds it in the
+	 * target context (that named by all but terminal atomic component of the
+	 * name), and associates the supplied attributes with the newly created
+	 * object. All intermediate and target contexts must already exist. If attrs
+	 * is null, this method is equivalent to Context.createSubcontext().
 	 * 
 	 * @param name the name of the context to create; may not be empty
 	 * @param attrs the attributes to associate with the newly created context
 	 * @return the newly created context
 	 * @exception javax.naming.NameAlreadyBoundException if name is already
-	 * bound
+	 *            bound
 	 * @exception javax.naming.directory.InvalidAttributesException if attrs
-	 * does not contain all the mandatory attributes required for creation
+	 *            does not contain all the mandatory attributes required for
+	 *            creation
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -557,12 +557,12 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Retrieves the schema associated with the named object. The schema 
-	 * describes rules regarding the structure of the namespace and the 
-	 * attributes stored within it. The schema specifies what types of 
-	 * objects can be added to the directory and where they can be added; 
-	 * what mandatory and optional attributes an object can have. The range 
-	 * of support for schemas is directory-specific.
+	 * Retrieves the schema associated with the named object. The schema
+	 * describes rules regarding the structure of the namespace and the
+	 * attributes stored within it. The schema specifies what types of objects
+	 * can be added to the directory and where they can be added; what mandatory
+	 * and optional attributes an object can have. The range of support for
+	 * schemas is directory-specific.
 	 * 
 	 * @param name the name of the object whose schema is to be retrieved
 	 * @return the schema associated with the context; never null
@@ -575,13 +575,13 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Retrieves a context containing the schema objects of the named 
-	 * object's class definitions.
+	 * Retrieves a context containing the schema objects of the named object's
+	 * class definitions.
 	 * 
-	 * @param name the name of the object whose object class definition is to 
-	 * be retrieved
-	 * @return the DirContext containing the named object's class 
-	 * definitions; never null
+	 * @param name the name of the object whose object class definition is to be
+	 *        retrieved
+	 * @return the DirContext containing the named object's class definitions;
+	 *         never null
 	 * @exception OperationNotSupportedException if schema not supported
 	 * @exception NamingException if a naming exception is encountered
 	 */
@@ -591,20 +591,20 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Searches in a single context for objects that contain a specified set 
-	 * of attributes, and retrieves selected attributes. The search is 
-	 * performed using the default SearchControls settings.
+	 * Searches in a single context for objects that contain a specified set of
+	 * attributes, and retrieves selected attributes. The search is performed
+	 * using the default SearchControls settings.
 	 * 
 	 * @param name the name of the context to search
-	 * @param matchingAttributes the attributes to search for. If empty or 
-	 * null, all objects in the target context are returned.
-	 * @param attributesToReturn the attributes to return. null indicates 
-	 * that all attributes are to be returned; an empty array indicates that 
-	 * none are to be returned.
-	 * @return a non-null enumeration of SearchResult objects. Each 
-	 * SearchResult contains the attributes identified by attributesToReturn 
-	 * and the name of the corresponding object, named relative to the 
-	 * context named by name.
+	 * @param matchingAttributes the attributes to search for. If empty or null,
+	 *        all objects in the target context are returned.
+	 * @param attributesToReturn the attributes to return. null indicates that
+	 *        all attributes are to be returned; an empty array indicates that
+	 *        none are to be returned.
+	 * @return a non-null enumeration of SearchResult objects. Each SearchResult
+	 *         contains the attributes identified by attributesToReturn and the
+	 *         name of the corresponding object, named relative to the context
+	 *         named by name.
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -614,18 +614,18 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Searches in a single context for objects that contain a specified set 
-	 * of attributes. This method returns all the attributes of such objects. 
-	 * It is equivalent to supplying null as the atributesToReturn parameter 
-	 * to the method search(Name, Attributes, String[]).
+	 * Searches in a single context for objects that contain a specified set of
+	 * attributes. This method returns all the attributes of such objects. It is
+	 * equivalent to supplying null as the atributesToReturn parameter to the
+	 * method search(Name, Attributes, String[]).
 	 * 
 	 * @param name the name of the context to search
-	 * @param matchingAttributes the attributes to search for. If empty or 
-	 * null, all objects in the target context are returned.
-	 * @return a non-null enumeration of SearchResult objects. Each 
-	 * SearchResult contains the attributes identified by attributesToReturn 
-	 * and the name of the corresponding object, named relative to the 
-	 * context named by name.
+	 * @param matchingAttributes the attributes to search for. If empty or null,
+	 *        all objects in the target context are returned.
+	 * @return a non-null enumeration of SearchResult objects. Each SearchResult
+	 *         contains the attributes identified by attributesToReturn and the
+	 *         name of the corresponding object, named relative to the context
+	 *         named by name.
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -635,23 +635,23 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Searches in the named context or object for entries that satisfy the 
-	 * given search filter. Performs the search as specified by the search 
+	 * Searches in the named context or object for entries that satisfy the
+	 * given search filter. Performs the search as specified by the search
 	 * controls.
 	 * 
 	 * @param name the name of the context or object to search
-	 * @param filter the filter expression to use for the search; may not be 
-	 * null
-	 * @param cons the search controls that control the search. If null, 
-	 * the default search controls are used (equivalent to 
-	 * (new SearchControls())).
-	 * @return an enumeration of SearchResults of the objects that satisfy 
-	 * the filter; never null
+	 * @param filter the filter expression to use for the search; may not be
+	 *        null
+	 * @param cons the search controls that control the search. If null, the
+	 *        default search controls are used (equivalent to (new
+	 *        SearchControls())).
+	 * @return an enumeration of SearchResults of the objects that satisfy the
+	 *         filter; never null
 	 * @exception javax.naming.directory.InvalidSearchFilterException if the
-	 * search filter specified is not supported or understood by the underlying
-	 * directory
+	 *            search filter specified is not supported or understood by the
+	 *            underlying directory
 	 * @exception javax.naming.directory.InvalidSearchControlsException if the
-	 * search controls contain invalid settings
+	 *            search controls contain invalid settings
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -661,27 +661,29 @@ class ZipDirContext extends BaseDirContext {
 	}
 
 	/**
-	 * Searches in the named context or object for entries that satisfy the 
-	 * given search filter. Performs the search as specified by the search 
+	 * Searches in the named context or object for entries that satisfy the
+	 * given search filter. Performs the search as specified by the search
 	 * controls.
 	 * 
 	 * @param name the name of the context or object to search
-	 * @param filterExpr the filter expression to use for the search. 
-	 * The expression may contain variables of the form "{i}" where i is a 
-	 * nonnegative integer. May not be null.
-	 * @param filterArgs the array of arguments to substitute for the 
-	 * variables in filterExpr. The value of filterArgs[i] will replace each 
-	 * occurrence of "{i}". If null, equivalent to an empty array.
-	 * @param cons the search controls that control the search. If null, the 
-	 * default search controls are used (equivalent to (new SearchControls())).
-	 * @return an enumeration of SearchResults of the objects that satisfy the 
-	 * filter; never null
-	 * @exception ArrayIndexOutOfBoundsException if filterExpr contains {i} 
-	 * expressions where i is outside the bounds of the array filterArgs
+	 * @param filterExpr the filter expression to use for the search. The
+	 *        expression may contain variables of the form "{i}" where i is a
+	 *        nonnegative integer. May not be null.
+	 * @param filterArgs the array of arguments to substitute for the variables
+	 *        in filterExpr. The value of filterArgs[i] will replace each
+	 *        occurrence of "{i}". If null, equivalent to an empty array.
+	 * @param cons the search controls that control the search. If null, the
+	 *        default search controls are used (equivalent to (new
+	 *        SearchControls())).
+	 * @return an enumeration of SearchResults of the objects that satisfy the
+	 *         filter; never null
+	 * @exception ArrayIndexOutOfBoundsException if filterExpr contains {i}
+	 *            expressions where i is outside the bounds of the array
+	 *            filterArgs
 	 * @exception javax.naming.directory.InvalidSearchControlsException if cons
-	 * contains invalid settings
+	 *            contains invalid settings
 	 * @exception javax.naming.directory.InvalidSearchFilterException if
-	 * filterExpr with filterArgs represents an invalid search filter
+	 *            filterExpr with filterArgs represents an invalid search filter
 	 * @exception NamingException if a naming exception is encountered
 	 */
 	@Override
@@ -889,8 +891,8 @@ class ZipDirContext extends BaseDirContext {
 	// ------------------------------------------------ WARResource Inner Class
 
 	/**
-	 * This specialized resource implementation avoids opening the IputStream
-	 * to the WAR right away.
+	 * This specialized resource implementation avoids opening the IputStream to
+	 * the WAR right away.
 	 */
 	protected class WARResource extends Resource {
 

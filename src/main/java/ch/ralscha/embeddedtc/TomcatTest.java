@@ -30,19 +30,19 @@ public class TomcatTest {
 	private static EmbeddedTomcat et;
 
 	/**
-	 * Starts an embedded tomcat on port 9998. 
-	 * Does not print any log messages and does not add a shutdown hook
+	 * Starts an embedded tomcat on port 9998. Does not print any log messages
+	 * and does not add a shutdown hook
 	 */
 	@BeforeClass
 	public static void startServer() {
 
 		final int port = 9998;
 
-		//Cleaning temp directory
+		// Cleaning temp directory
 		final File tempDirectory = new File(".", "/target/tomcat." + port);
 		deleteDir(tempDirectory);
 
-		//Starting Tomcat
+		// Starting Tomcat
 		et = new EmbeddedTomcat(port);
 		et.setSilent(true);
 		et.setPrivileged(true);

@@ -26,6 +26,7 @@ import org.apache.tomcat.util.digester.Digester;
 @SuppressWarnings("javadoc")
 public class ContextConfig {
 	private final List<ContextResource> resources = new ArrayList<ContextResource>();
+
 	private final List<ContextEnvironment> environments = new ArrayList<ContextEnvironment>();
 
 	public void addResource(final ContextResource res) {
