@@ -700,7 +700,7 @@ public class EmbeddedTomcat {
 		((StandardManager) ctx.getManager()).setPathname("");
 
 		installSlf4jBridge();
-		
+
 		if (await) {
 			tomcat.getServer().await();
 		}
