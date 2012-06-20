@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
@@ -631,11 +629,10 @@ public class EmbeddedTomcat {
 			contextDir = new File(".").getAbsolutePath() + "/src/main/webapp";
 		}
 
-		TargetClassesContext dirContext = new TargetClassesContext();
 		final Context ctx;
 		try {
 			ctx = tomcat.addWebapp(contextPath, contextDir);
-			ctx.setResources(dirContext);
+			ctx.setResources(new TargetClassesContext());
 		} catch (final ServletException e) {
 			throw new RuntimeException(e);
 		}
@@ -647,11 +644,7 @@ public class EmbeddedTomcat {
 				jarFiles = findJarFiles();
 
 				for (final File jarFile : jarFiles) {
-					final ZipFile zipFile = new ZipFile(jarFile);
-					final ZipEntry entry = zipFile.getEntry("/");
-					final ZipDirContext zipDirContext = new ZipDirContext(zipFile, new ZipDirContext.Entry("/", entry));
-					zipDirContext.loadEntries();
-					dirContext.addAltDirContext(zipDirContext);
+					ctx.addResourceJarUrl(new URL("jar:" + jarFile.toURI() + "!/"));
 				}
 
 			} catch (final ParserConfigurationException e) {
