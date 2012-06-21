@@ -13,7 +13,7 @@
 
 	<groupId>ch.ralscha</groupId>
 	<artifactId>embeddedtc</artifactId>
-	<version>0.0.9-SNAPSHOT</version>
+	<version>0.0.9</version>
 
 	<inceptionYear>2012</inceptionYear>
 	<name>Embedded Tomcat Helper</name>
