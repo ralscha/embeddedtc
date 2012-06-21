@@ -52,39 +52,38 @@ that points to current_dir + /src/main/webapp</p>
 create an instance of EmbeddedTomcat, call the configure methods and start it
 with startAndWait()</p>
 
-<p>public class StartTomcat {
-    public static void main(String[] args) throwsException {</p>
-
-<pre><code>    EmbeddedTomcat etc = new EmbeddedTomcat(9999);
-    etc.setContextDirectory("/home/mywebapp");
-    etc.setTempDirectoryName("tmp");
-    etc.addContextEnvironmentString("key", "value");
-    etc.startAndWait();
+<p><pre><code>public class StartTomcat {
+    public static void main(String[] args) throwsException {
+        EmbeddedTomcat etc = new EmbeddedTomcat(9999);
+        etc.setContextDirectory("/home/mywebapp");
+        etc.setTempDirectoryName("tmp");
+        etc.addContextEnvironmentString("key", "value");
+        etc.startAndWait();
+    }
 }
 </code></pre>
-
-<p>}</p>
 
 <p>or with method chaining</p>
 
-<p>public class StartTomcat {
-    public static void main(String[] args) throwsException {</p>
-
-<pre><code>    EmbeddedTomcat.create()
-                  .setPort(9999)
-                  .setContextDirector("/home/mywebapp")
-                  .setTempDirectoryName("tmp")
-                  .addContextEnvironmentString("key", "value")
-                  .startAndWait();
+<p>
+<pre><code> public class StartTomcat {
+    public static void main(String[] args) throwsException {
+        EmbeddedTomcat.create()
+                      .setPort(9999)
+                      .setContextDirector("/home/mywebapp")
+                      .setTempDirectoryName("tmp")
+                      .addContextEnvironmentString("key", "value")
+                      .startAndWait();
+    }
 }
 </code></pre>
 
-<p>}</p>
 
 <h1>CHANGELOG</h1>
 
-<p>0.0.10-SNAPSHOT
-  no changes yet</p>
+<p>0.0.10-SNAPSHOT<br/>
+  <em>no changes yet</em>
+</p>  
 
 <p>0.0.9   June 21, 2012</p>
 
