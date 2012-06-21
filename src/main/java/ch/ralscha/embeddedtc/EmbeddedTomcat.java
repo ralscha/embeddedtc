@@ -40,9 +40,15 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Server;
+import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.core.JasperListener;
+import org.apache.catalina.core.JreMemoryLeakPreventionListener;
+import org.apache.catalina.core.ThreadLocalLeakPreventionListener;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.NamingResources;
+import org.apache.catalina.mbeans.GlobalResourcesLifecycleListener;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.juli.logging.Log;
@@ -82,6 +88,8 @@ public class EmbeddedTomcat {
 	private boolean privileged;
 
 	private boolean silent;
+
+	private boolean addDefaultListeners;
 
 	private final List<Artifact> resourceArtifacts;
 
@@ -345,6 +353,18 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setPrivileged(final boolean privileged) {
 		this.privileged = privileged;
+		return this;
+	}
+
+	/**
+	 * Installs the default listeners AprLifecycleListener, JasperListener,
+	 * JreMemoryLeakPreventionListener, GlobalResourcesLifecycleListener and
+	 * ThreadLocalLeakPreventionListener during startup.
+	 * 
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat addDefaultListeners() {
+		this.addDefaultListeners = true;
 		return this;
 	}
 
@@ -663,6 +683,15 @@ public class EmbeddedTomcat {
 
 		if (!contextEnvironments.isEmpty() || !contextResources.isEmpty()) {
 			tomcat.enableNaming();
+		}
+
+		if (addDefaultListeners) {
+			Server server = tomcat.getServer();
+			server.addLifecycleListener(new AprLifecycleListener());
+			server.addLifecycleListener(new JasperListener());
+			server.addLifecycleListener(new JreMemoryLeakPreventionListener());
+			server.addLifecycleListener(new GlobalResourcesLifecycleListener());
+			server.addLifecycleListener(new ThreadLocalLeakPreventionListener());
 		}
 
 		for (final ContextEnvironment env : contextEnvironments) {
