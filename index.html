@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Embeddedtc by ralscha</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Embeddedtc</h1>
+          <h2>Embedded Tomcat</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/ralscha/embeddedtc/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/ralscha/embeddedtc/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/ralscha/embeddedtc" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <p>Helper class to simplify starting an embedded Tomcat in a
+development environment for a Maven webapplication project.</p>
+
+<p>Add this dependency to your project.</p>
+
+<pre><code>    &lt;dependency&gt;
+        &lt;groupId&gt;ch.ralscha&lt;/groupId&gt;
+        &lt;artifactId&gt;embeddedtc&lt;/artifactId&gt;
+        &lt;version&gt;0.0.9&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+</code></pre>
+
+<p>and start the embedded Tomcat with ch.ralscha.embeddedtc.EmbeddedTomcat.<br>
+This starts a Tomcat on port 8080 with a context path "/" and a context directory
+that points to current_dir + /src/main/webapp</p>
+
+<p>If you need more control create a class in your project (e.g. StartTomcat) and
+create an instance of EmbeddedTomcat, call the configure methods and start it
+with startAndWait()</p>
+
+<p>public class StartTomcat {
+    public static void main(String[] args) throwsException {</p>
+
+<pre><code>    EmbeddedTomcat etc = new EmbeddedTomcat(9999);
+    etc.setContextDirectory("/home/mywebapp");
+    etc.setTempDirectoryName("tmp");
+    etc.addContextEnvironmentString("key", "value");
+    etc.startAndWait();
+}
+</code></pre>
+
+<p>}</p>
+
+<p>or with method chaining</p>
+
+<p>public class StartTomcat {
+    public static void main(String[] args) throwsException {</p>
+
+<pre><code>    EmbeddedTomcat.create()
+                  .setPort(9999)
+                  .setContextDirector("/home/mywebapp")
+                  .setTempDirectoryName("tmp")
+                  .addContextEnvironmentString("key", "value")
+                  .startAndWait();
+}
+</code></pre>
+
+<p>}</p>
+
+<h1>CHANGELOG</h1>
+
+<p>0.0.10-SNAPSHOT
+  no changes yet</p>
+
+<p>0.0.9   June 21, 2012</p>
+
+<ul>
+<li>Updated to Tomcat 7.0.28</li>
+</ul><p>0.0.8   May 21, 2012</p>
+
+<ul>
+<li>Updated ecj to 3.7.2</li>
+<li>Fix bug in installSlf4jBridge. install() does not have a parameter</li>
+</ul><p>0.0.7   April 17, 2012</p>
+
+<ul>
+<li>Removed addInitializer(..) method.<br>
+Directory WEB-INF/classes is now mapped to ./target/classes and therefore all the
+Servlet 3.0 Annotations and ServletContainerInitializer are now working out of the box.</li>
+</ul><p>0.0.6   March 9, 2012</p>
+
+<ul>
+<li>Updated to Tomcat 7.0.27</li>
+</ul><p>0.0.5   March 9, 2012</p>
+
+<ul>
+<li>Bugfix: Make class ContextConfig public. Digester cannot access class if it has package visibility</li>
+<li>All config methods now return the EmbeddedTomcat instance to enable method chaining </li>
+<li>Changed parameters to final</li>
+</ul><p>0.0.4   March 2, 2012</p>
+
+<ul>
+<li>Add a new method addContextEnvironmentAndResourceFromFile(File f)
+Reads ContextEnvironment and Contextresource from a file and adds it to the embedded Tomcat</li>
+<li>Changed the way resource jars are loaded. In older version the ZipFile was closed after starting Tomcat
+and was no longer able to read content from the jar file.<br>
+</li>
+<li>Moved default temporary directory to the projects target directory</li>
+<li>TomcatTest: Now deletes temp directory before starting Tomcat</li>
+</ul><p>0.0.3   February 26, 2012</p>
+
+<ul>
+<li>The start() method no longer blocks after starting Tomcat</li>
+<li>Added a new method startAndWait() that blocks the program after starting Tomcat<br>
+</li>
+<li>Added setSilent(boolean) method. If set to true it disables output messages.</li>
+<li>Added new constructor EmbeddedTomcat(String contextPath). 
+Creates Tomcat with specified context path and port 8080<br>
+</li>
+</ul><p>0.0.2   February 25, 2012                 </p>
+
+<ul>
+<li>Convert exceptions to RuntimeException</li>
+<li>Starts by default a shutdown listener on the shutdown port (port + 1000)</li>
+<li>Before starting a new Tomcat it tries to stop a previous one 
+by sending a command to the shutdown port.</li>
+</ul><p>0.0.1   February 24, 2012 </p>
+
+<ul>
+<li>Initial version</li>
+</ul>
+        </section>
+
+        <footer>
+          Embeddedtc is maintained by <a href="https://github.com/ralscha">ralscha</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
