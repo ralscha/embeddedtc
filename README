@@ -14,7 +14,7 @@ and start the embedded Tomcat with ch.ralscha.embeddedtc.EmbeddedTomcat.
 This starts a Tomcat on port 8080 with a context path "/" and a context directory
 that points to current_dir + /src/main/webapp
 
-If you need more control create a class in your project (e.g. StartTomcat) and
+If you need more control create a class in your project (e.g. StartTomcat),
 create an instance of EmbeddedTomcat, call the configure methods and start it
 with startAndWait()
 
