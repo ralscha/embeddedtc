@@ -20,7 +20,6 @@ with startAndWait()
 
 public class StartTomcat {
 	public static void main(String[] args) throwsException {
-
 		EmbeddedTomcat etc = new EmbeddedTomcat(9999);
 		etc.setContextDirectory("/home/mywebapp");
 		etc.setTempDirectoryName("tmp");
