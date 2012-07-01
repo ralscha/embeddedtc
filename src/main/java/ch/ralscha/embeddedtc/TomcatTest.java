@@ -58,9 +58,9 @@ public class TomcatTest {
 		et.stop();
 	}
 
-	private static void deleteDir(final File dir) {
+	private static void deleteDir(File dir) {
 		if (dir.isDirectory()) {
-			for (final File child : dir.listFiles()) {
+			for (File child : dir.listFiles()) {
 				deleteDir(child);
 			}
 		}

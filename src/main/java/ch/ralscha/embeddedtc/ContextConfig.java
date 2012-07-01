@@ -29,11 +29,11 @@ public class ContextConfig {
 
 	private final List<ContextEnvironment> environments = new ArrayList<ContextEnvironment>();
 
-	public void addResource(final ContextResource res) {
+	public void addResource(ContextResource res) {
 		resources.add(res);
 	}
 
-	public void addEnvironment(final ContextEnvironment env) {
+	public void addEnvironment(ContextEnvironment env) {
 		environments.add(env);
 	}
 

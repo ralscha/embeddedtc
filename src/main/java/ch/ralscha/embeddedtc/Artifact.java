@@ -20,13 +20,13 @@ class Artifact {
 
 	private final String artifact;
 
-	public Artifact(final String groupId, final String artifact) {
+	public Artifact(String groupId, String artifact) {
 		this.groupId = groupId;
 		this.artifact = artifact;
 	}
 
 	@SuppressWarnings("hiding")
-	public boolean is(final String groupId, final String artifact) {
+	public boolean is(String groupId, String artifact) {
 		return this.groupId.equalsIgnoreCase(groupId) && this.artifact.equalsIgnoreCase(artifact);
 	}
 }

@@ -31,7 +31,7 @@ import org.apache.naming.resources.FileDirContext;
 public class TargetClassesContext extends FileDirContext {
 
 	@Override
-	protected List<NamingEntry> doListBindings(final String name) throws NamingException {
+	protected List<NamingEntry> doListBindings(String name) throws NamingException {
 
 		if ("/WEB-INF/classes".equals(name)) {
 			FileDirContext fileDirContext = new FileDirContext();
