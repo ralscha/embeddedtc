@@ -4,13 +4,13 @@ development environment for a Maven webapplication project.
 Add this dependency to your project.
 
 		<dependency>
-			<groupId>ch.ralscha</groupId>
+			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>0.0.9</version>
+			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		
-and start the embedded Tomcat with ch.ralscha.embeddedtc.EmbeddedTomcat.	
+and start the embedded Tomcat with ch.rasc.embeddedtc.EmbeddedTomcat.	
 This starts a Tomcat on port 8080 with a context path "/" and a context directory
 that points to current_dir + /src/main/webapp
 
@@ -45,8 +45,9 @@ public class StartTomcat {
 
 CHANGELOG
 =========
-0.0.10-SNAPSHOT
-  no changes yet
+1.0-SNAPSHOT
+  * Moved to a new package ch.ralscha -> ch.rasc
+  * Updated to Tomcat 7.0.29
 
 0.0.9   June 21, 2012
   * Updated to Tomcat 7.0.28

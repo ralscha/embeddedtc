@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.ralscha.embeddedtc;
+package ch.rasc.embeddedtc;
 
 class Artifact {
 	private final String groupId;
