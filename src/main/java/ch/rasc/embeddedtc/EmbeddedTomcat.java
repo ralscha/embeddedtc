@@ -41,6 +41,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Server;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.JasperListener;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
@@ -89,7 +90,11 @@ public class EmbeddedTomcat {
 
 	private boolean silent;
 
-	private boolean addDefaultListeners;
+	private boolean addDefaultListeners = false;
+
+	private boolean useNio = false;
+
+	private boolean enableNaming = false;
 
 	private final List<Artifact> resourceArtifacts;
 
@@ -353,6 +358,28 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setPrivileged(boolean privileged) {
 		this.privileged = privileged;
+		return this;
+	}
+
+	/**
+	 * Instructs the embedded tomcat to use the Non Blocking Connector
+	 * (org.apache.coyote.http11.Http11NioProtocol) instead of the Blocking
+	 * Connector (org.apache.coyote.http11.Http11Protocol)
+	 * 
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat useNio() {
+		this.useNio = true;
+		return this;
+	}
+
+	/**
+	 * Enables JNDI naming which is disabled by default.
+	 * 
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat enableNaming() {
+		this.enableNaming = true;
 		return this;
 	}
 
@@ -625,7 +652,19 @@ public class EmbeddedTomcat {
 		}
 
 		tomcat = new Tomcat();
-		tomcat.setPort(port);
+
+		if (addDefaultListeners) {
+			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
+		}
+
+		if (useNio) {
+			Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+			connector.setPort(port);
+			tomcat.setConnector(connector);
+			tomcat.getService().addConnector(connector);
+		} else {
+			tomcat.setPort(port);
+		}
 
 		if (tempDirectory == null) {
 			tempDirectory = new File(".", "/target/tomcat." + port).getAbsolutePath();
@@ -681,16 +720,18 @@ public class EmbeddedTomcat {
 			ctx.setPrivileged(true);
 		}
 
-		if (!contextEnvironments.isEmpty() || !contextResources.isEmpty()) {
+		if (enableNaming || !contextEnvironments.isEmpty() || !contextResources.isEmpty()) {
 			tomcat.enableNaming();
+
+			if (addDefaultListeners) {
+				tomcat.getServer().addLifecycleListener(new GlobalResourcesLifecycleListener());
+			}
 		}
 
 		if (addDefaultListeners) {
 			Server server = tomcat.getServer();
-			server.addLifecycleListener(new AprLifecycleListener());
 			server.addLifecycleListener(new JasperListener());
 			server.addLifecycleListener(new JreMemoryLeakPreventionListener());
-			server.addLifecycleListener(new GlobalResourcesLifecycleListener());
 			server.addLifecycleListener(new ThreadLocalLeakPreventionListener());
 		}
 
