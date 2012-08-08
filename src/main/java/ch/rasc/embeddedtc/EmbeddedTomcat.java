@@ -653,19 +653,6 @@ public class EmbeddedTomcat {
 
 		tomcat = new Tomcat();
 
-		if (addDefaultListeners) {
-			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
-		}
-
-		if (useNio) {
-			Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-			connector.setPort(port);
-			tomcat.setConnector(connector);
-			tomcat.getService().addConnector(connector);
-		} else {
-			tomcat.setPort(port);
-		}
-
 		if (tempDirectory == null) {
 			tempDirectory = new File(".", "/target/tomcat." + port).getAbsolutePath();
 		}
@@ -676,12 +663,25 @@ public class EmbeddedTomcat {
 			tomcat.setSilent(true);
 		}
 
+		if (addDefaultListeners) {
+			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
+		}
+
+		if (useNio) {
+			Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+			connector.setPort(port);
+			connector.setURIEncoding("UTF-8");
+			tomcat.setConnector(connector);
+			tomcat.getService().addConnector(connector);
+		} else {
+			tomcat.setPort(port);
+			tomcat.getConnector().setURIEncoding("UTF-8");
+		}
+
 		if (shutdownPort != null) {
 			tomcat.getServer().setPort(shutdownPort);
 			tomcat.getServer().setShutdown(SHUTDOWN_COMMAND);
 		}
-
-		tomcat.getConnector().setURIEncoding("UTF-8");
 
 		String contextDir = contextDirectory;
 		if (contextDir == null) {
