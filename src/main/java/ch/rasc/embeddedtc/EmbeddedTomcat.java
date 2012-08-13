@@ -22,18 +22,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Lifecycle;
@@ -54,10 +48,6 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -96,15 +86,9 @@ public class EmbeddedTomcat {
 
 	private boolean enableNaming = false;
 
-	private final List<Artifact> resourceArtifacts;
-
 	private final List<ContextEnvironment> contextEnvironments;
 
 	private final List<ContextResource> contextResources;
-
-	private File pomFile;
-
-	private File m2Directory;
 
 	private Tomcat tomcat;
 
@@ -183,8 +167,6 @@ public class EmbeddedTomcat {
 
 		setContextPath(contextPath);
 		setPort(port);
-		setPomFile(null);
-		setM2Directory(null);
 		setShutdownPort(port + 1000);
 		setSecondsToWaitBeforePortBecomesAvailable(10);
 		setPrivileged(false);
@@ -194,7 +176,6 @@ public class EmbeddedTomcat {
 		this.tempDirectory = null;
 		this.contextEnvironments = new ArrayList<ContextEnvironment>();
 		this.contextResources = new ArrayList<ContextResource>();
-		this.resourceArtifacts = new ArrayList<Artifact>();
 		this.removeDefaultServlet = false;
 	}
 
@@ -269,32 +250,6 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setTempDirectoryName(String name) {
 		tempDirectory = new File(".", "target/" + name).getAbsolutePath();
-		return this;
-	}
-
-	/**
-	 * Sets the location of the pom file. <br>
-	 * Default value is current directory + /pom.xml
-	 * 
-	 * @param pomFile File object that points to the maven pom file (pom.xml)
-	 * @return The embedded Tomcat
-	 */
-	public EmbeddedTomcat setPomFile(File pomFile) {
-		this.pomFile = pomFile;
-		return this;
-	}
-
-	/**
-	 * Sets the path to the Maven local repository. Default value is <code>
-	 * System.getProperty("user.home") + /.m2/repository/
-	 * </code>
-	 * 
-	 * @param m2Directory File object that points to the Maven local repository
-	 *        directory
-	 * @return The embedded Tomcat
-	 */
-	public EmbeddedTomcat setM2Directory(File m2Directory) {
-		this.m2Directory = m2Directory;
 		return this;
 	}
 
@@ -404,37 +359,6 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setSilent(boolean silent) {
 		this.silent = silent;
-		return this;
-	}
-
-	/**
-	 * Adds all the dependencies specified in the pom.xml (except scope
-	 * provided) to the context as a resource jar. A resource jar contains
-	 * static resources in the directory META-INF/resources
-	 * 
-	 * @return The embedded Tomcat
-	 * 
-	 * @see Context#addResourceJarUrl(URL)
-	 */
-	public EmbeddedTomcat addAllDependenciesAsResourceJar() {
-		resourceArtifacts.add(new AllArtifact());
-		return this;
-	}
-
-	/**
-	 * Adds the specified jar to the context as a resource jar. The helper class
-	 * automatically locates the version of the specified artifact in the
-	 * pom.xml and locates the jar file in the local maven repository.
-	 * 
-	 * @param groupId the maven groupId name
-	 * @param artifact the maven artifact name
-	 * @return The embedded Tomcat
-	 * 
-	 * @see Context#addResourceJarUrl(URL)
-	 * @see EmbeddedTomcat#addAllDependenciesAsResourceJar()
-	 */
-	public EmbeddedTomcat addDependencyAsResourceJar(String groupId, String artifact) {
-		resourceArtifacts.add(new Artifact(groupId, artifact));
 		return this;
 	}
 
@@ -696,26 +620,6 @@ public class EmbeddedTomcat {
 			throw new RuntimeException(e);
 		}
 
-		if (!resourceArtifacts.isEmpty()) {
-
-			List<File> jarFiles;
-			try {
-				jarFiles = findJarFiles();
-
-				for (File jarFile : jarFiles) {
-					ctx.addResourceJarUrl(new URL("jar:" + jarFile.toURI() + "!/"));
-				}
-
-			} catch (ParserConfigurationException e) {
-				throw new RuntimeException(e);
-			} catch (SAXException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-
-		}
-
 		if (privileged) {
 			ctx.setPrivileged(true);
 		}
@@ -850,101 +754,6 @@ public class EmbeddedTomcat {
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private List<File> findJarFiles() throws ParserConfigurationException, SAXException, IOException {
-
-		File m2Dir = m2Directory;
-		if (m2Dir == null) {
-			final File homeDir = new File(System.getProperty("user.home"));
-			m2Dir = new File(homeDir, ".m2/repository/");
-		}
-
-		final List<File> jars = new ArrayList<File>();
-
-		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		final DocumentBuilder db = dbf.newDocumentBuilder();
-
-		File pom = pomFile;
-		if (pom == null) {
-			pom = new File("./pom.xml");
-		}
-
-		final Document doc = db.parse(pom);
-
-		final Map<String, String> properties = new HashMap<String, String>();
-		final NodeList propertiesNodeList = doc.getElementsByTagName("properties");
-		if (propertiesNodeList != null && propertiesNodeList.item(0) != null) {
-			final NodeList propertiesChildren = propertiesNodeList.item(0).getChildNodes();
-			for (int i = 0; i < propertiesChildren.getLength(); i++) {
-				final Node node = propertiesChildren.item(i);
-				if (node instanceof Element) {
-					properties.put("${" + node.getNodeName() + "}", stripWhitespace(node.getTextContent()));
-				}
-			}
-		}
-
-		final NodeList nodeList = doc.getElementsByTagName("dependency");
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			final Element node = (Element) nodeList.item(i);
-			String groupId = node.getElementsByTagName("groupId").item(0).getTextContent();
-			String artifact = node.getElementsByTagName("artifactId").item(0).getTextContent();
-			String version = node.getElementsByTagName("version").item(0).getTextContent();
-
-			groupId = stripWhitespace(groupId);
-			artifact = stripWhitespace(artifact);
-			version = stripWhitespace(version);
-
-			groupId = resolveProperty(groupId, properties);
-			artifact = resolveProperty(artifact, properties);
-			version = resolveProperty(version, properties);
-
-			if (isIncluded(groupId, artifact)) {
-
-				String scope = null;
-				final NodeList scopeNode = node.getElementsByTagName("scope");
-				if (scopeNode != null && scopeNode.item(0) != null) {
-					scope = stripWhitespace(scopeNode.item(0).getTextContent());
-				}
-
-				if (scope == null || !scope.equals("provided")) {
-					groupId = groupId.replace(".", "/");
-					final String artifactFileName = groupId + "/" + artifact + "/" + version + "/" + artifact + "-"
-							+ version + ".jar";
-
-					jars.add(new File(m2Dir, artifactFileName));
-				}
-
-			}
-		}
-
-		return jars;
-	}
-
-	private boolean isIncluded(String groupId, String artifactId) {
-
-		for (Artifact artifact : resourceArtifacts) {
-			if (artifact.is(groupId, artifactId)) {
-				return true;
-			}
-		}
-		return false;
-
-	}
-
-	private static String stripWhitespace(String orig) {
-		if (orig != null) {
-			return orig.replace("\r", "").replace("\n", "").replace("\t", "").trim();
-		}
-		return orig;
-	}
-
-	private static String resolveProperty(String orig, Map<String, String> properties) {
-		final String property = properties.get(orig);
-		if (property != null) {
-			return property;
-		}
-		return orig;
 	}
 
 }
