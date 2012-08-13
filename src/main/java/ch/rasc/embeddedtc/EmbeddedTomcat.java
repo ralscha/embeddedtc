@@ -45,6 +45,7 @@ import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.mbeans.GlobalResourcesLifecycleListener;
 import org.apache.catalina.session.StandardManager;
+import org.apache.catalina.startup.CatalinaProperties;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
@@ -73,6 +74,8 @@ public class EmbeddedTomcat {
 	private String tempDirectory;
 
 	private String contextDirectory;
+
+	private String skipJars = null;
 
 	private boolean removeDefaultServlet;
 
@@ -218,6 +221,19 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setContextDirectory(String contextDirectory) {
 		this.contextDirectory = contextDirectory;
+		return this;
+	}
+
+	/**
+	 * List of JAR files that should not be scanned for configuration
+	 * information such as web fragments, TLD files etc. It must be a comma
+	 * separated list of JAR file names. Example: spring*.jar,cglib*.jar
+	 * 
+	 * @param skipJars list of jars, comma separated
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat skipJars(String skipJarsList) {
+		this.skipJars = skipJarsList;
 		return this;
 	}
 
@@ -573,6 +589,21 @@ public class EmbeddedTomcat {
 		} catch (IOException e) {
 			log.error("PORT " + port + " ALREADY IN USE");
 			return;
+		}
+
+		// Ready a dummy value. This triggers loading of the catalina.properties
+		// file
+		CatalinaProperties.getProperty("dummy");
+
+		if (skipJars != null && !skipJars.trim().isEmpty()) {
+			String oldValue = System.getProperty("tomcat.util.scan.DefaultJarScanner.jarsToSkip");
+			String newValue;
+			if (oldValue != null && !oldValue.trim().isEmpty()) {
+				newValue = oldValue + "," + skipJars;
+			} else {
+				newValue = skipJars;
+			}
+			System.setProperty("tomcat.util.scan.DefaultJarScanner.jarsToSkip", newValue);
 		}
 
 		tomcat = new Tomcat();
