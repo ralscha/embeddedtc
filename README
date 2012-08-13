@@ -53,7 +53,7 @@ CHANGELOG
   * Remove resource jar handling methods. This works now out of the box with Tomcat 7.0.29
   * Read catalina.properties at the start. 
   * Add method skipJars(String skipJarsList). These jars are not scanned at startup for web 
-    fragments, tlds, etc. This improves startup time significantly. By default catalina.properties
+    fragments, tlds, etc. This decreases startup time significantly. By default catalina.properties
     already contains a list of jars to skip. The parameter of this method is added at the end
     of catalina.properties list. 
   
