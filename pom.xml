@@ -47,7 +47,7 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>7.0.29</tomcat.version>
+		<tomcat.version>7.0.30</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
@@ -107,7 +107,7 @@
 
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
+				<version>2.2</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -140,7 +140,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
-				<version>2.3.1</version>
+				<version>2.4</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
