@@ -75,7 +75,11 @@ public class EmbeddedTomcat {
 
 	private String contextDirectory;
 
-	private String skipJars = null;
+	private String skipJarsDefaultJarScanner;
+
+	private String skipJarsContextConfig;
+
+	private String skipJarsTldConfig;
 
 	private boolean removeDefaultServlet;
 
@@ -225,15 +229,56 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * List of JAR files that should not be scanned for configuration
-	 * information such as web fragments, TLD files etc. It must be a comma
-	 * separated list of JAR file names. Example: spring*.jar,cglib*.jar
+	 * List of JAR files that should not be scanned using the JarScanner
+	 * functionality. This is typically used to scan JARs for configuration
+	 * information. JARs that do not contain such information may be excluded
+	 * from the scan to speed up the scanning process. JARs on this list are
+	 * excluded from all scans.
+	 * <p>
+	 * Scan specific lists (to exclude JARs from individual scans) see
+	 * {@link #skipJarsContextConfig(String)} and
+	 * {@link #skipJarsTldConfig(String)}.
+	 * <p>
+	 * The list must be a comma separated list of JAR file names. Example:
+	 * spring*.jar,cglib*.jar.
+	 * <p>
+	 * This list is appended to the default list. The default list is located in
+	 * the file CATALINA_HOME\conf\catalina.properties under the key
+	 * tomcat.util.scan.DefaultJarScanner.jarsToSkip
 	 * 
 	 * @param skipJars list of jars, comma separated
 	 * @return The embedded Tomcat
 	 */
-	public EmbeddedTomcat skipJars(String skipJarsList) {
-		this.skipJars = skipJarsList;
+	public EmbeddedTomcat skipJarsDefaultJarScanner(String skipJars) {
+		this.skipJarsDefaultJarScanner = skipJars;
+		return this;
+	}
+
+	/**
+	 * Additional JARs (over and above the default JARs set with
+	 * {@link #skipJarsDefaultJarScanner(String)}) to skip when scanning for
+	 * Servlet 3.0 pluggability features. These features include web fragments,
+	 * annotations, SCIs and classes that match @HandlesTypes. The list must be
+	 * a comma separated list of JAR file names.
+	 * 
+	 * @param skipJars list of jars, comma separated
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat skipJarsContextConfig(String skipJars) {
+		this.skipJarsContextConfig = skipJars;
+		return this;
+	}
+
+	/**
+	 * Additional JARs (over and above the default JARs set with
+	 * {@link #skipJarsDefaultJarScanner(String)}) to skip when scanning for
+	 * TLDs. The list must be a comma separated list of JAR file names.
+	 * 
+	 * @param skipJars list of jars, comma separated
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat skipJarsTldConfig(String skipJars) {
+		this.skipJarsTldConfig = skipJars;
 		return this;
 	}
 
@@ -591,20 +636,13 @@ public class EmbeddedTomcat {
 			return;
 		}
 
-		// Ready a dummy value. This triggers loading of the catalina.properties
+		// Read a dummy value. This triggers loading of the catalina.properties
 		// file
 		CatalinaProperties.getProperty("dummy");
 
-		if (skipJars != null && !skipJars.trim().isEmpty()) {
-			String oldValue = System.getProperty("tomcat.util.scan.DefaultJarScanner.jarsToSkip");
-			String newValue;
-			if (oldValue != null && !oldValue.trim().isEmpty()) {
-				newValue = oldValue + "," + skipJars;
-			} else {
-				newValue = skipJars;
-			}
-			System.setProperty("tomcat.util.scan.DefaultJarScanner.jarsToSkip", newValue);
-		}
+		appendSkipJars("tomcat.util.scan.DefaultJarScanner.jarsToSkip", skipJarsDefaultJarScanner);
+		appendSkipJars("org.apache.catalina.startup.ContextConfig.jarsToSkip", skipJarsContextConfig);
+		appendSkipJars("org.apache.catalina.startup.TldConfig.jarsToSkip", skipJarsTldConfig);
 
 		tomcat = new Tomcat();
 
@@ -714,6 +752,19 @@ public class EmbeddedTomcat {
 			} catch (LifecycleException e) {
 				throw new RuntimeException(e);
 			}
+		}
+	}
+
+	private static void appendSkipJars(String systemPropertyKey, String skipJars) {
+		if (skipJars != null && !skipJars.trim().isEmpty()) {
+			String oldValue = System.getProperty(systemPropertyKey);
+			String newValue;
+			if (oldValue != null && !oldValue.trim().isEmpty()) {
+				newValue = oldValue + "," + skipJars;
+			} else {
+				newValue = skipJars;
+			}
+			System.setProperty(systemPropertyKey, newValue);
 		}
 	}
 
