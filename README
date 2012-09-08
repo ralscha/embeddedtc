@@ -48,8 +48,8 @@ CHANGELOG
 1.1     September 8, 2012
   * Updated to Tomcat 7.0.30
   * Added useNio() method. Instructs the embedded Tomcat to use the Non Blocking Connector
-	(org.apache.coyote.http11.Http11NioProtocol) instead of the Blocking
-	Connector (org.apache.coyote.http11.Http11Protocol)
+    (org.apache.coyote.http11.Http11NioProtocol) instead of the Blocking Connector 
+    (org.apache.coyote.http11.Http11Protocol)
   * Added enableNaming() method. Enables JNDI naming.
   * Removed resource jar handling methods. This works now out of the box with Tomcat 7.0.29 
     and later
