@@ -50,7 +50,7 @@ public class StartTomcat {
 
 ## CHANGELOG
 
-### 1.2     October ?, 2012
+### 1.2     October 17, 2012
   * Update to Tomcat 7.0.32
 
 ### 1.1     September 8, 2012
