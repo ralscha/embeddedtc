@@ -50,6 +50,9 @@ public class StartTomcat {
 
 ## CHANGELOG
 
+### 1.3-SNAPSHOT   
+  * Use "" for the root context. / is wrong.
+
 ### 1.2     October 17, 2012
   * Update to Tomcat 7.0.32
 
