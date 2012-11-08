@@ -100,7 +100,7 @@ public class EmbeddedTomcat {
 	private Tomcat tomcat;
 
 	/**
-	 * Starts a embedded Tomcat on port 8080 with context path "/" and context
+	 * Starts a embedded Tomcat on port 8080 with context path "" and context
 	 * directory current directory + /src/main/webapp
 	 * 
 	 * @param args program arguments
@@ -111,7 +111,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Convenient method to create a embedded Tomcat that listens on port 8080
-	 * and with a context path of "/"
+	 * and with a context path of ""
 	 * 
 	 * @return EmbeddedTomcat the embedded tomcat
 	 */
@@ -120,18 +120,18 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * Creates an embedded Tomcat with context path "/" and port 8080. Context
+	 * Creates an embedded Tomcat with context path "" and port 8080. Context
 	 * directory points to current directory + /src/main/webapp Change context
 	 * directory with the method <code>setContextDirectory(String)</code>
 	 * 
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
 	public EmbeddedTomcat() {
-		this("/", 8080);
+		this("", 8080);
 	}
 
 	/**
-	 * Creates an embedded Tomcat with context path "/" and specified port.
+	 * Creates an embedded Tomcat with context path "" and specified port.
 	 * Context directory points to current directory + /src/main/webapp Change
 	 * context directory with the method
 	 * <code>setContextDirectory(String)</code>
@@ -141,7 +141,7 @@ public class EmbeddedTomcat {
 	 * @see #setContextDirectory(String)
 	 */
 	public EmbeddedTomcat(int port) {
-		this("/", port);
+		this("", port);
 	}
 
 	/**
@@ -200,13 +200,14 @@ public class EmbeddedTomcat {
 	/**
 	 * Sets the contextPath for the webapplication
 	 * 
-	 * @param contextPath The new contextPath. Has to start with /
+	 * @param contextPath The new contextPath. Has to start with / or is the
+	 *        empty "" string
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat setContextPath(String contextPath) {
 
-		if (contextPath != null && !contextPath.startsWith("/")) {
-			throw new IllegalArgumentException("contextPath does not start with /");
+		if (contextPath == null || (!contextPath.equals("") && !contextPath.startsWith("/"))) {
+			throw new IllegalArgumentException("contextPath must be the empty string \"\" or a path starting with /");
 		}
 
 		this.contextPath = contextPath;
