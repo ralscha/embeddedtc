@@ -316,18 +316,6 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * Calling this method prevents adding the DefaultServlet to the context.
-	 * This is needed if the programm uses an initializer that adds a servlet
-	 * with a mapping of "/"
-	 * 
-	 * @return The embedded Tomcat
-	 */
-	public EmbeddedTomcat removeDefaultServlet() {
-		removeDefaultServlet = true;
-		return this;
-	}
-
-	/**
 	 * The EmbeddedTomcat opens as default a shutdown port on port + 1000 with
 	 * the shutdown command <code>EMBEDDED_TC_SHUTDOWN</code> Calling this
 	 * method disables adding the shutdown hook.
