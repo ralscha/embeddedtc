@@ -30,10 +30,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Server;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
@@ -80,8 +77,6 @@ public class EmbeddedTomcat {
 	private String skipJarsContextConfig;
 
 	private String skipJarsTldConfig;
-
-	private boolean removeDefaultServlet;
 
 	private boolean privileged;
 
@@ -183,7 +178,6 @@ public class EmbeddedTomcat {
 		this.tempDirectory = null;
 		this.contextEnvironments = new ArrayList<ContextEnvironment>();
 		this.contextResources = new ArrayList<ContextResource>();
-		this.removeDefaultServlet = false;
 	}
 
 	/**
@@ -703,17 +697,6 @@ public class EmbeddedTomcat {
 
 		for (ContextResource res : contextResources) {
 			ctx.getNamingResources().addResource(res);
-		}
-
-		if (removeDefaultServlet) {
-			ctx.addLifecycleListener(new LifecycleListener() {
-				@Override
-				public void lifecycleEvent(LifecycleEvent event) {
-					if (Lifecycle.BEFORE_START_EVENT.equals(event.getType())) {
-						ctx.removeServletMapping("/");
-					}
-				}
-			});
 		}
 
 		try {
