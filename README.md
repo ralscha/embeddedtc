@@ -7,13 +7,13 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.1</version>
+			<version>1.3</version>
 			<scope>provided</scope>
 		</dependency>
 ```
 		
 and start the embedded Tomcat with ch.rasc.embeddedtc.EmbeddedTomcat.	
-This starts a Tomcat on port 8080 with a context path "/" and a context directory
+This starts a Tomcat on port 8080 with a context path "" and a context directory
 that points to current_dir + /src/main/webapp
 
 If you need more control create a class in your project (e.g. StartTomcat),
@@ -50,8 +50,9 @@ public class StartTomcat {
 
 ## CHANGELOG
 
-### 1.3-SNAPSHOT   
+### 1.3     November 22, 2012 
   * Use "" for the root context. / is wrong.
+  * Update to Tomcat 7.0.33
 
 ### 1.2     October 17, 2012
   * Update to Tomcat 7.0.32
