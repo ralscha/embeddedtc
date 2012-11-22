@@ -50,6 +50,9 @@ public class StartTomcat {
 
 ## CHANGELOG
 
+### 1.4-SNAPSHOT (Scheduled: tbd)
+  _no changes yet_
+
 ### 1.3     November 22, 2012 
   * Use "" for the root context. / is wrong.
   * Update to Tomcat 7.0.33
