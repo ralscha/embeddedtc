@@ -47,7 +47,7 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>7.0.33</tomcat.version>
+		<tomcat.version>7.0.34</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
@@ -76,13 +76,7 @@
 			<artifactId>tomcat-jdbc</artifactId>
 			<version>${tomcat.version}</version>
 		</dependency>		
-		
-		<dependency>
-			<groupId>org.eclipse.jdt.core.compiler</groupId>
-			<artifactId>ecj</artifactId>
-			<version>3.7.2</version>
-		</dependency>
-		
+				
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
