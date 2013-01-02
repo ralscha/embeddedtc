@@ -765,7 +765,7 @@ public class EmbeddedTomcat {
 				return;
 			}
 
-			// try to wait specified seconds until port becomes available
+			// try to wait the specified amount of seconds until port becomes available
 			int count = 0;
 			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
 				try {
@@ -786,7 +786,7 @@ public class EmbeddedTomcat {
 
 	private static void installSlf4jBridge() {
 		try {
-			// Check class is available
+			// Check if slf4j bridge is available
 			final Class<?> clazz = Class.forName("org.slf4j.bridge.SLF4JBridgeHandler");
 
 			// Remove all JUL handlers
