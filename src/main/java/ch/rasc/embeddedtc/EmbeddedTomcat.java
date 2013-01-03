@@ -705,7 +705,7 @@ public class EmbeddedTomcat {
 			throw new RuntimeException(e);
 		}
 
-		((StandardManager) ctx.getManager()).setPathname("");
+		((StandardManager) ctx.getManager()).setPathname(null);
 
 		installSlf4jBridge();
 
