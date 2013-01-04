@@ -39,9 +39,22 @@ public class StartTomcat {
   public static void main(String[] args) throwsException {
     EmbeddedTomcat.create()
 		          .setPort(9999)
-		          .setContextDirector("/home/mywebapp")
+		          .setContextDirectory("/home/mywebapp")
 		          .setTempDirectoryName("tmp")
 		          .addContextEnvironmentString("key", "value")
+		          .startAndWait();
+	}
+}
+```
+
+It's also possible to configure the embedded Tomcat with a context xml file. This examples starts a Tomcat on port 8080 with a 
+web application deployed to the ROOT context ("") and the context directory points to ./src/main/webapp
+
+```
+public class StartTomcat {
+  public static void main(String[] args) throwsException {
+    EmbeddedTomcat.create()
+		          .setContextFile("./src/main/config/tomcat.xml")
 		          .startAndWait();
 	}
 }
@@ -51,14 +64,19 @@ public class StartTomcat {
 ## CHANGELOG
 
 ### 1.4-SNAPSHOT (Scheduled: tbd)
-  _no changes yet_
+  * Updated to Tomcat 7.0.34
+  * Added addContextInitializationParameter method. Adds context parameters that are accessible within the application with 
+    [ServletContext#getInitParameter](http://docs.oracle.com/javaee/6/api/javax/servlet/ServletContext.html#getInitParameter\(java.lang.String\))
+  * Deprectated addContextEnvironmentAndResourceFromFile method and replaced it with setContextFile. This library no longer reads this file it
+    passes the location of the file to Tomcat and he will then read the file during startup. As a result every configuration that is allowed 
+    in the context xml file is now supported.
 
 ### 1.3     November 22, 2012 
   * Use "" for the root context. / is wrong.
-  * Update to Tomcat 7.0.33
+  * Updated to Tomcat 7.0.33
 
 ### 1.2     October 17, 2012
-  * Update to Tomcat 7.0.32
+  * Updated to Tomcat 7.0.32
 
 ### 1.1     September 8, 2012
   * Updated to Tomcat 7.0.30

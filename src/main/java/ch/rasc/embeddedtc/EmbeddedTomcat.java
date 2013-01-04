@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.JasperListener;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
 import org.apache.catalina.core.ThreadLocalLeakPreventionListener;
+import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.NamingResources;
@@ -46,7 +49,6 @@ import org.apache.catalina.startup.CatalinaProperties;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
-import org.xml.sax.SAXException;
 
 /**
  * Helper class to simplify setting up a Embedded Tomcat in a IDE and with a
@@ -91,6 +93,10 @@ public class EmbeddedTomcat {
 	private final List<ContextEnvironment> contextEnvironments;
 
 	private final List<ContextResource> contextResources;
+
+	private final List<ApplicationParameter> contextInitializationParameters;
+
+	private URL contextFileURL;
 
 	private Tomcat tomcat;
 
@@ -178,6 +184,7 @@ public class EmbeddedTomcat {
 		this.tempDirectory = null;
 		this.contextEnvironments = new ArrayList<ContextEnvironment>();
 		this.contextResources = new ArrayList<ContextResource>();
+		this.contextInitializationParameters = new ArrayList<ApplicationParameter>();
 	}
 
 	/**
@@ -195,7 +202,7 @@ public class EmbeddedTomcat {
 	 * Sets the contextPath for the webapplication
 	 * 
 	 * @param contextPath The new contextPath. Has to start with / or is the
-	 *        empty "" string
+	 *            empty "" string
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat setContextPath(String contextPath) {
@@ -215,7 +222,7 @@ public class EmbeddedTomcat {
 	 * directory in a Maven web app project.
 	 * 
 	 * @param contextDirectory Path name to the directory that contains the web
-	 *        application.
+	 *            application.
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat setContextDirectory(String contextDirectory) {
@@ -286,7 +293,7 @@ public class EmbeddedTomcat {
 	 * </code>
 	 * 
 	 * @param tempDirectory File object that represents the location of the temp
-	 *        directory
+	 *            directory
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat setTempDirectory(File tempDirectory) {
@@ -491,6 +498,14 @@ public class EmbeddedTomcat {
 		return this;
 	}
 
+	public EmbeddedTomcat addContextInitializationParameter(String name, String value) {
+		ApplicationParameter parameter = new ApplicationParameter();
+		parameter.setName(name);
+		parameter.setValue(value);
+		contextInitializationParameters.add(parameter);
+		return this;
+	}
+
 	/**
 	 * Convenient method for adding a context environment to the embedded
 	 * Tomcat. Creates a <code>ContextEnvironment</code> object and adds it to
@@ -557,19 +572,42 @@ public class EmbeddedTomcat {
 	/**
 	 * Read ContextEnvironment and ContextResource definition from a text file.
 	 * 
-	 * @param contextFile Location to a context file
+	 * @param contextFile Location of the context file
 	 * @return The embedded Tomcat
+	 * @deprecated use {@link #setContextFile(URL)}
 	 */
+	@Deprecated
 	public EmbeddedTomcat addContextEnvironmentAndResourceFromFile(File contextFile) {
 		try {
-			final ContextConfig cc = (ContextConfig) ContextConfig.createDigester().parse(contextFile);
-			if (cc != null) {
-				contextEnvironments.addAll(cc.getEnvironments());
-				contextResources.addAll(cc.getResources());
-			}
-		} catch (IOException e) {
+			return setContextFile(contextFile.toURI().toURL());
+		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
-		} catch (SAXException e) {
+		}
+	}
+
+	/**
+	 * Sets the location of the context file that configures this web
+	 * application
+	 * 
+	 * @param contextFileURL Location of the context file
+	 * @return The embedded Tomcat instance
+	 */
+	public EmbeddedTomcat setContextFile(URL contextFileURL) {
+		this.contextFileURL = contextFileURL;
+		return this;
+	}
+
+	/**
+	 * Sets the location of the context file that configures this web
+	 * application
+	 * 
+	 * @param contextFile Location of the context file
+	 * @return The embedded Tomcat instance
+	 */
+	public EmbeddedTomcat setContextFile(String contextFile) {
+		try {
+			this.contextFileURL = new File(contextFile).toURI().toURL();
+		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
 		return this;
@@ -580,9 +618,15 @@ public class EmbeddedTomcat {
 	 * 
 	 * @param contextFile Location to a context file
 	 * @return The embedded Tomcat
+	 * @deprecated use {@link #setContextFile(String)}
 	 */
+	@Deprecated
 	public EmbeddedTomcat addContextEnvironmentAndResourceFromFile(String contextFile) {
-		addContextEnvironmentAndResourceFromFile(new File(contextFile));
+		try {
+			setContextFile(new File(contextFile).toURI().toURL());
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 		return this;
 	}
 
@@ -676,7 +720,7 @@ public class EmbeddedTomcat {
 			ctx.setPrivileged(true);
 		}
 
-		if (enableNaming || !contextEnvironments.isEmpty() || !contextResources.isEmpty()) {
+		if (enableNaming || !contextEnvironments.isEmpty() || !contextResources.isEmpty() || contextFileURL != null) {
 			tomcat.enableNaming();
 
 			if (addDefaultListeners) {
@@ -697,6 +741,14 @@ public class EmbeddedTomcat {
 
 		for (ContextResource res : contextResources) {
 			ctx.getNamingResources().addResource(res);
+		}
+
+		for (ApplicationParameter param : contextInitializationParameters) {
+			ctx.addParameter(param.getName(), param.getValue());
+		}
+
+		if (contextFileURL != null) {
+			ctx.setConfigFile(contextFileURL);
 		}
 
 		try {
@@ -765,7 +817,8 @@ public class EmbeddedTomcat {
 				return;
 			}
 
-			// try to wait the specified amount of seconds until port becomes available
+			// try to wait the specified amount of seconds until port becomes
+			// available
 			int count = 0;
 			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
 				try {
