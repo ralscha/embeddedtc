@@ -744,7 +744,7 @@ public class EmbeddedTomcat {
 		}
 
 		for (ApplicationParameter param : contextInitializationParameters) {
-			ctx.addParameter(param.getName(), param.getValue());
+			ctx.addApplicationParameter(param);
 		}
 
 		if (contextFileURL != null) {
