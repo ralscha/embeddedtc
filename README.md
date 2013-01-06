@@ -70,6 +70,7 @@ public class StartTomcat {
   * Deprectated addContextEnvironmentAndResourceFromFile method and replaced it with setContextFile. This library no longer reads this file it
     passes the location of the file to Tomcat and he will then read the file during startup. As a result every configuration that is allowed 
     in the context xml file is now supported.
+  * Shutdown Tomcat if an error occurs during startup
 
 ### 1.3     November 22, 2012 
   * Use "" for the root context. / is wrong.
