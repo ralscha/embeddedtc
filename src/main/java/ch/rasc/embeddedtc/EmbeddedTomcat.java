@@ -32,12 +32,16 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.JasperListener;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
+import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.core.ThreadLocalLeakPreventionListener;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.ContextEnvironment;
@@ -750,6 +754,17 @@ public class EmbeddedTomcat {
 		if (contextFileURL != null) {
 			ctx.setConfigFile(contextFileURL);
 		}
+
+		// Shutdown tomcat if a failure occurs during startup
+		ctx.addLifecycleListener(new LifecycleListener() {
+			@Override
+			public void lifecycleEvent(LifecycleEvent event) {
+				if (event.getLifecycle().getState() == LifecycleState.FAILED) {
+					((StandardServer) tomcat.getServer()).stopAwait();
+
+				}
+			}
+		});
 
 		try {
 			tomcat.start();
