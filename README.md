@@ -7,7 +7,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.3</version>
+			<version>1.4</version>
 			<scope>provided</scope>
 		</dependency>
 ```
@@ -63,8 +63,8 @@ public class StartTomcat {
 
 ## CHANGELOG
 
-### 1.4-SNAPSHOT (Scheduled: tbd)
-  * Updated to Tomcat 7.0.34
+### 1.4     January 31, 2013
+  * Updated to Tomcat 7.0.35
   * Added addContextInitializationParameter method. Adds context parameters that are accessible within the application with 
     [ServletContext#getInitParameter](http://docs.oracle.com/javaee/6/api/javax/servlet/ServletContext.html#getInitParameter\(java.lang.String\))
   * Deprectated addContextEnvironmentAndResourceFromFile method and replaced it with setContextFile. This library no longer reads this file it
