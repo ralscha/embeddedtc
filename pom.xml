@@ -47,7 +47,7 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>7.0.35</tomcat.version>
+		<tomcat.version>7.0.37</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
@@ -72,12 +72,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.eclipse.jdt.core.compiler</groupId>
-			<artifactId>ecj</artifactId>
-			<version>4.2.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jdbc</artifactId>
 			<version>${tomcat.version}</version>
@@ -97,13 +91,6 @@
 		</dependency>
 
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>rasc.ch</id>
-			<url>http://repository.rasc.ch/</url>
-		</repository>
-	</repositories>
 
 	<build>
 		<plugins>
