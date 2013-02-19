@@ -7,7 +7,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 			<scope>provided</scope>
 		</dependency>
 ```
@@ -63,6 +63,9 @@ public class StartTomcat {
 
 ## CHANGELOG
 
+### 1.5     February 19, 2013
+  * Updated to Tomcat 7.0.37
+  
 ### 1.4     January 31, 2013
   * Updated to Tomcat 7.0.35
   * Added addContextInitializationParameter method. Adds context parameters that are accessible within the application with 
