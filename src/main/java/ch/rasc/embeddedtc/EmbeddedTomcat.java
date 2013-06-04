@@ -37,6 +37,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
+import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.JasperListener;
@@ -51,6 +52,8 @@ import org.apache.catalina.mbeans.GlobalResourcesLifecycleListener;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.CatalinaProperties;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.webresources.DirResourceSet;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
@@ -186,9 +189,9 @@ public class EmbeddedTomcat {
 		setContextDirectory(null);
 
 		this.tempDirectory = null;
-		this.contextEnvironments = new ArrayList<ContextEnvironment>();
-		this.contextResources = new ArrayList<ContextResource>();
-		this.contextInitializationParameters = new ArrayList<ApplicationParameter>();
+		this.contextEnvironments = new ArrayList<>();
+		this.contextResources = new ArrayList<>();
+		this.contextInitializationParameters = new ArrayList<>();
 	}
 
 	/**
@@ -659,9 +662,8 @@ public class EmbeddedTomcat {
 		// try to shutdown a previous Tomcat
 		sendShutdownCommand();
 
-		try {
-			final ServerSocket srv = new ServerSocket(port);
-			srv.close();
+		try (final ServerSocket srv = new ServerSocket(port);) {
+			// nothing here
 		} catch (IOException e) {
 			log.error("PORT " + port + " ALREADY IN USE");
 			return;
@@ -715,9 +717,10 @@ public class EmbeddedTomcat {
 		final Context ctx;
 		try {
 			ctx = tomcat.addWebapp(contextPath, contextDir);
-			//todo is there a tomcat8 way to do that?
-			//and do we need that?
-			//ctx.setResources(new TargetClassesContext());
+			WebResourceRoot resourceRoot = new StandardRoot(ctx);
+			DirResourceSet dirResource = new DirResourceSet(resourceRoot, "./target/classes", "/WEB-INF/classes", "/");
+			resourceRoot.addPreResources(dirResource);
+			ctx.setResources(resourceRoot);
 		} catch (ServletException e) {
 			throw new RuntimeException(e);
 		}
@@ -811,17 +814,14 @@ public class EmbeddedTomcat {
 
 	private void sendShutdownCommand() {
 		if (shutdownPort != null) {
-			try {
-				final Socket socket = new Socket("localhost", shutdownPort);
-				final OutputStream stream = socket.getOutputStream();
+			try (final Socket socket = new Socket("localhost", shutdownPort);
+					final OutputStream stream = socket.getOutputStream();) {
 
 				for (int i = 0; i < SHUTDOWN_COMMAND.length(); i++) {
 					stream.write(SHUTDOWN_COMMAND.charAt(i));
 				}
 
 				stream.flush();
-				stream.close();
-				socket.close();
 			} catch (UnknownHostException e) {
 				if (!silent) {
 					log.debug(e);
@@ -838,9 +838,7 @@ public class EmbeddedTomcat {
 			// available
 			int count = 0;
 			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
-				try {
-					final ServerSocket srv = new ServerSocket(port);
-					srv.close();
+				try (final ServerSocket srv = new ServerSocket(port);) {
 					return;
 				} catch (IOException e) {
 					count++;
