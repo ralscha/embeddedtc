@@ -715,7 +715,9 @@ public class EmbeddedTomcat {
 		final Context ctx;
 		try {
 			ctx = tomcat.addWebapp(contextPath, contextDir);
-			ctx.setResources(new TargetClassesContext());
+			//todo is there a tomcat8 way to do that?
+			//and do we need that?
+			//ctx.setResources(new TargetClassesContext());
 		} catch (ServletException e) {
 			throw new RuntimeException(e);
 		}
