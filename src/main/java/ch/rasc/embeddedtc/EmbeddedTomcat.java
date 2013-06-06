@@ -38,7 +38,6 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
 import org.apache.catalina.WebResourceRoot;
-import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.JasperListener;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
@@ -92,8 +91,6 @@ public class EmbeddedTomcat {
 	private boolean silent;
 
 	private boolean addDefaultListeners = false;
-
-	private boolean useNio = false;
 
 	private boolean enableNaming = false;
 
@@ -375,18 +372,6 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * Instructs the embedded tomcat to use the Non Blocking Connector
-	 * (org.apache.coyote.http11.Http11NioProtocol) instead of the Blocking
-	 * Connector (org.apache.coyote.http11.Http11Protocol)
-	 * 
-	 * @return The embedded Tomcat
-	 */
-	public EmbeddedTomcat useNio() {
-		this.useNio = true;
-		return this;
-	}
-
-	/**
 	 * Enables JNDI naming which is disabled by default.
 	 * 
 	 * @return The embedded Tomcat
@@ -577,22 +562,6 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * Read ContextEnvironment and ContextResource definition from a text file.
-	 * 
-	 * @param contextFile Location of the context file
-	 * @return The embedded Tomcat
-	 * @deprecated use {@link #setContextFile(URL)}
-	 */
-	@Deprecated
-	public EmbeddedTomcat addContextEnvironmentAndResourceFromFile(File contextFile) {
-		try {
-			return setContextFile(contextFile.toURI().toURL());
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
 	 * Sets the location of the context file that configures this web
 	 * application
 	 * 
@@ -614,23 +583,6 @@ public class EmbeddedTomcat {
 	public EmbeddedTomcat setContextFile(String contextFile) {
 		try {
 			this.contextFileURL = new File(contextFile).toURI().toURL();
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
-
-	/**
-	 * Read ContextEnvironment and ContextResource definition from a text file.
-	 * 
-	 * @param contextFile Location to a context file
-	 * @return The embedded Tomcat
-	 * @deprecated use {@link #setContextFile(String)}
-	 */
-	@Deprecated
-	public EmbeddedTomcat addContextEnvironmentAndResourceFromFile(String contextFile) {
-		try {
-			setContextFile(new File(contextFile).toURI().toURL());
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
@@ -692,17 +644,9 @@ public class EmbeddedTomcat {
 		if (addDefaultListeners) {
 			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
 		}
-
-		if (useNio) {
-			Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-			connector.setPort(port);
-			connector.setURIEncoding("UTF-8");
-			tomcat.setConnector(connector);
-			tomcat.getService().addConnector(connector);
-		} else {
-			tomcat.setPort(port);
-			tomcat.getConnector().setURIEncoding("UTF-8");
-		}
+	
+		tomcat.setPort(port);
+		tomcat.getConnector().setURIEncoding("UTF-8");
 
 		if (shutdownPort != null) {
 			tomcat.getServer().setPort(shutdownPort);
