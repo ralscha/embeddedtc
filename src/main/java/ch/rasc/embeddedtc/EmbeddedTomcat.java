@@ -714,6 +714,17 @@ public class EmbeddedTomcat {
 
 		final Context ctx;
 		try {
+
+			if (!contextPath.equals("")) {
+				File rootCtxDir = new File("./target/tcroot");
+				if (!rootCtxDir.exists()) {
+					rootCtxDir.mkdirs();
+				}
+				Context rootCtx = tomcat.addWebapp("", rootCtxDir.getAbsolutePath());
+				rootCtx.setPrivileged(true);
+				Tomcat.addServlet(rootCtx, "listContexts", new ListContextsServlet(rootCtx)).addMapping("/");
+			}
+
 			ctx = tomcat.addWebapp(contextPath, contextDir);
 			ctx.setResources(new TargetClassesContext());
 		} catch (ServletException e) {
