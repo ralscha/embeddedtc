@@ -63,7 +63,8 @@ public class StartTomcat {
 
 ## CHANGELOG
 
-### 1.8     (Scheduled: as soon as [Tomcat 7.0.41](http://ci.apache.org/projects/tomcat/tomcat7/docs/changelog.html) is released)
+### 1.8     June 10, 2013
+  * Updated to Tomcat 7.0.41
   * Automatically add a list context servlet when application is not running on root context (""). 
     This servlet sends a 404 and lists the configured context path when the user tries to connect to an unknown context. Similar to jetty
 
