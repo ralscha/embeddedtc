@@ -40,11 +40,13 @@ public class ListContextsServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		StringBuilder sb = new StringBuilder(300);
+		sb.append("<!DOCTYPE html>");
 		sb.append("<html>");
 		sb.append("<head>");
+		sb.append("<meta charset=\"utf-8\">");
 		sb.append("<title>Error 404 - Not Found</title>");
 		sb.append("</head>");
-		sb.append("<body>");
+		sb.append("<body style=\"font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;\">");
 		sb.append("<h2>Error 404 - Not Found.</h2>");
 
 		sb.append("No context on this server matched or handled this request.");
@@ -65,6 +67,8 @@ public class ListContextsServlet extends HttpServlet {
 					sb.append("\">");
 					sb.append(context.getPath());
 					sb.append("</a>");
+					sb.append(" --> ");
+					sb.append(context.getDocBase());
 					sb.append("</li>");
 				}
 			}
