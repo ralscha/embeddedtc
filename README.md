@@ -7,7 +7,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.7</version>
+			<version>1.8</version>
 			<scope>provided</scope>
 		</dependency>
 ```
@@ -62,6 +62,10 @@ public class StartTomcat {
 
 
 ## CHANGELOG
+
+### 1.9-SNAPSHOT (Schedule: Wait for Tomcat 7.0.42)
+  * Fixed bug in TargetClassesContext. Only handle /WEB-INF/classes special case and call superclass for every other name.
+    Bug prevented [ServletContext.getResourcePaths](http://docs.oracle.com/javaee/7/api/javax/servlet/ServletContext.html#getResourcePaths(java.lang.String)) to work correctly. 
 
 ### 1.8     June 10, 2013
   * Updated to Tomcat 7.0.41

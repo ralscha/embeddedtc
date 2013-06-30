@@ -40,7 +40,7 @@ public class TargetClassesContext extends FileDirContext {
 			return Collections.singletonList(namingEntry);
 		}
 
-		return null;
+		return super.doListBindings(name);
 
 	}
 
