@@ -54,9 +54,9 @@
 
     <repositories>
 		<repository>
-			<id>rasc</id>
-			<name>My Private Repository</name>
-			<url>http://repository.rasc.ch</url>
+			<id>ApacheSnapshot</id>
+			<name>Apache Snapshot Repository</name>
+			<url>https://repository.apache.org/content/repositories/snapshots</url>
 		</repository>
     </repositories>
 
