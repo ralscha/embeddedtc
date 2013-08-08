@@ -47,18 +47,10 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>8.0-SNAPSHOT</tomcat.version>
+		<tomcat.version>8.0.0-RC1</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
-
-    <repositories>
-		<repository>
-			<id>ApacheSnapshot</id>
-			<name>Apache Snapshot Repository</name>
-			<url>https://repository.apache.org/content/repositories/snapshots</url>
-		</repository>
-    </repositories>
 
 	<dependencies>
 		<dependency>
