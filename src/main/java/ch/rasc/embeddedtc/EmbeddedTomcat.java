@@ -644,7 +644,7 @@ public class EmbeddedTomcat {
 		if (addDefaultListeners) {
 			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
 		}
-	
+
 		tomcat.setPort(port);
 		tomcat.getConnector().setURIEncoding("UTF-8");
 
@@ -662,7 +662,7 @@ public class EmbeddedTomcat {
 		try {
 			ctx = tomcat.addWebapp(contextPath, contextDir);
 			WebResourceRoot resourceRoot = new StandardRoot(ctx);
-			DirResourceSet dirResource = new DirResourceSet(resourceRoot, "./target/classes", "/WEB-INF/classes", "/");
+			DirResourceSet dirResource = new DirResourceSet(resourceRoot, "/WEB-INF/classes", "./target/classes", "/");
 			resourceRoot.addPreResources(dirResource);
 			ctx.setResources(resourceRoot);
 		} catch (ServletException e) {
