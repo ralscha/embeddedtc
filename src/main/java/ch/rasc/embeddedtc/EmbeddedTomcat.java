@@ -64,8 +64,6 @@ public class EmbeddedTomcat {
 
 	private static final Log log = LogFactory.getLog(EmbeddedTomcat.class);
 
-	private static final String SHUTDOWN_COMMAND = "EMBEDDED_TC_SHUTDOWN";
-
 	private String contextPath;
 
 	private Integer port;
@@ -170,7 +168,7 @@ public class EmbeddedTomcat {
 	 * <code>setContextDirectory(String)</code>
 	 * 
 	 * @param contextPath has to start with /
-	 * @param port ip port the server is listening
+	 * @param port ip port the server is listening. Shutdown port is set to port + 1000
 	 * 
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
@@ -321,14 +319,14 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * The EmbeddedTomcat opens as default a shutdown port on port + 1000 with
-	 * the shutdown command <code>EMBEDDED_TC_SHUTDOWN</code> Calling this
+	 * The EmbeddedTomcat listens per default for shutdown commands on port 8005 with
+	 * the shutdown command <code>SHUTDOWN</code>. Calling this
 	 * method disables adding the shutdown hook.
 	 * 
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat dontAddShutdownHook() {
-		shutdownPort = null;
+		shutdownPort = -1;
 		return this;
 	}
 
@@ -348,7 +346,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Specifies the port the server is listen for the shutdown command. Default
-	 * is port + 1000
+	 * is port 8005
 	 * 
 	 * @param shutdownPort the shutdown port
 	 * @return The embedded Tomcat *
@@ -704,7 +702,6 @@ public class EmbeddedTomcat {
 
 		if (shutdownPort != null) {
 			tomcat.getServer().setPort(shutdownPort);
-			tomcat.getServer().setShutdown(SHUTDOWN_COMMAND);
 		}
 
 		String contextDir = contextDirectory;
@@ -824,8 +821,8 @@ public class EmbeddedTomcat {
 				final Socket socket = new Socket("localhost", shutdownPort);
 				final OutputStream stream = socket.getOutputStream();
 
-				for (int i = 0; i < SHUTDOWN_COMMAND.length(); i++) {
-					stream.write(SHUTDOWN_COMMAND.charAt(i));
+				for (int i = 0; i < "SHUTDOWN".length(); i++) {
+					stream.write("SHUTDOWN".charAt(i));
 				}
 
 				stream.flush();
