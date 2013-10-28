@@ -786,7 +786,9 @@ public class EmbeddedTomcat {
 
 		if (await) {
 			tomcat.getServer().await();
+			stop();
 		}
+				
 	}
 
 	/**
