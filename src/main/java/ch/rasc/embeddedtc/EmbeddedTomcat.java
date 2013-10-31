@@ -168,7 +168,8 @@ public class EmbeddedTomcat {
 	 * <code>setContextDirectory(String)</code>
 	 * 
 	 * @param contextPath has to start with /
-	 * @param port ip port the server is listening. Shutdown port is set to port + 1000
+	 * @param port ip port the server is listening. Shutdown port is set to port
+	 *            + 1000
 	 * 
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
@@ -319,14 +320,14 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * The EmbeddedTomcat listens per default for shutdown commands on port 8005 with
-	 * the shutdown command <code>SHUTDOWN</code>. Calling this
-	 * method disables adding the shutdown hook.
+	 * The EmbeddedTomcat listens per default for shutdown commands on port 8005
+	 * with the shutdown command <code>SHUTDOWN</code>. Calling this method
+	 * disables adding the shutdown hook.
 	 * 
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat dontAddShutdownHook() {
-		shutdownPort = -1;
+		shutdownPort = null;
 		return this;
 	}
 
@@ -788,7 +789,7 @@ public class EmbeddedTomcat {
 			tomcat.getServer().await();
 			stop();
 		}
-				
+
 	}
 
 	/**
