@@ -168,7 +168,8 @@ public class EmbeddedTomcat {
 	 * <code>setContextDirectory(String)</code>
 	 * 
 	 * @param contextPath has to start with /
-	 * @param port ip port the server is listening. Shutdown port is set to port + 1000
+	 * @param port ip port the server is listening. Shutdown port is set to port
+	 *            + 1000
 	 * 
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
@@ -319,14 +320,14 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-	 * The EmbeddedTomcat listens per default for shutdown commands on port 8005 with
-	 * the shutdown command <code>SHUTDOWN</code>. Calling this
-	 * method disables adding the shutdown hook.
+	 * The EmbeddedTomcat listens per default for shutdown commands on port 8005
+	 * with the shutdown command <code>SHUTDOWN</code>. Calling this method
+	 * disables adding the shutdown hook.
 	 * 
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat dontAddShutdownHook() {
-		shutdownPort = -1;
+		shutdownPort = null;
 		return this;
 	}
 
@@ -612,7 +613,7 @@ public class EmbeddedTomcat {
 		// try to shutdown a previous Tomcat
 		sendShutdownCommand();
 
-		try (final ServerSocket srv = new ServerSocket(port);) {
+		try (final ServerSocket srv = new ServerSocket(port)) {
 			// nothing here
 		} catch (IOException e) {
 			log.error("PORT " + port + " ALREADY IN USE");
@@ -657,6 +658,17 @@ public class EmbeddedTomcat {
 
 		final Context ctx;
 		try {
+
+			if (!contextPath.equals("")) {
+				File rootCtxDir = new File("./target/tcroot");
+				if (!rootCtxDir.exists()) {
+					rootCtxDir.mkdirs();
+				}
+				Context rootCtx = tomcat.addWebapp("", rootCtxDir.getAbsolutePath());
+				rootCtx.setPrivileged(true);
+				Tomcat.addServlet(rootCtx, "listContexts", new ListContextsServlet(rootCtx)).addMapping("/");
+			}
+
 			ctx = tomcat.addWebapp(contextPath, contextDir);
 			WebResourceRoot resourceRoot = new StandardRoot(ctx);
 			DirResourceSet dirResource = new DirResourceSet(resourceRoot, "/WEB-INF/classes", "./target/classes", "/");
@@ -724,7 +736,9 @@ public class EmbeddedTomcat {
 
 		if (await) {
 			tomcat.getServer().await();
+			stop();
 		}
+
 	}
 
 	/**
@@ -756,7 +770,7 @@ public class EmbeddedTomcat {
 	private void sendShutdownCommand() {
 		if (shutdownPort != null) {
 			try (final Socket socket = new Socket("localhost", shutdownPort);
-					final OutputStream stream = socket.getOutputStream();) {
+					final OutputStream stream = socket.getOutputStream()) {
 
 				for (int i = 0; i < "SHUTDOWN".length(); i++) {
 					stream.write("SHUTDOWN".charAt(i));
@@ -779,7 +793,7 @@ public class EmbeddedTomcat {
 			// available
 			int count = 0;
 			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
-				try (final ServerSocket srv = new ServerSocket(port);) {
+				try (final ServerSocket srv = new ServerSocket(port)) {
 					return;
 				} catch (IOException e) {
 					count++;

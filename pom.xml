@@ -187,6 +187,8 @@
 						<exclude>**/*.xml</exclude>
 						<exclude>**/*.txt</exclude>
 						<exclude>**/.gitignore</exclude>
+						<exclude>**/*.md</exclude>
+						<exclude>**/*.py</exclude>						
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>

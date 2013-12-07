@@ -1,5 +1,6 @@
-Helper class to simplify starting an embedded Tomcat in a
-development environment for a Maven webapplication project.
+[![Build Status](https://api.travis-ci.org/ralscha/embeddedtc.png)](http://travis-ci.org/ralscha/embeddedtc)
+
+Helper class to simplify starting an embedded Tomcat  for a Maven web application project in a integrated development environment (e.g. Eclipse) .
 
 Add this dependency to your project.
 
@@ -7,17 +8,17 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.7</version>
+			<version>1.10</version>
 			<scope>provided</scope>
 		</dependency>
 ```
 		
-and start the embedded Tomcat with ch.rasc.embeddedtc.EmbeddedTomcat.	
+and start the embedded Tomcat with the main class ch.rasc.embeddedtc.EmbeddedTomcat.	
 This starts a Tomcat on port 8080 with a context path "" and a context directory
 that points to current_dir + /src/main/webapp
 
 If you need more control create a class in your project (e.g. StartTomcat),
-create an instance of EmbeddedTomcat, call the configure methods and start it
+create an instance of EmbeddedTomcat, call the configure methods and start the server
 with startAndWait()
 
 ```
@@ -62,6 +63,23 @@ public class StartTomcat {
 
 
 ## CHANGELOG
+
+### 1.11     tbd
+  * Add a call to stop() when somebody sends a shutdown command. Previous versions did not stop the server.  
+
+### 1.10     October 26, 2013
+  * Updated to Tomcat 7.0.47
+  * Fix some issues and javadocs concerning the shutdown port
+  
+### 1.9     July 7, 2013
+  * Updated to Tomcat 7.0.42
+  * Fixed bug in TargetClassesContext. Only handle /WEB-INF/classes special case and call superclass for every other name.
+    Bug prevented [ServletContext.getResourcePaths](http://docs.oracle.com/javaee/7/api/javax/servlet/ServletContext.html#getResourcePaths(java.lang.String)) to work correctly. 
+
+### 1.8     June 10, 2013
+  * Updated to Tomcat 7.0.41
+  * Automatically add a list context servlet when application is not running on root context (""). 
+    This servlet sends a 404 and lists the configured context path when the user tries to connect to an unknown context. Similar to jetty
 
 ### 1.7     May 9, 2013
   * Updated to Tomcat 7.0.40
