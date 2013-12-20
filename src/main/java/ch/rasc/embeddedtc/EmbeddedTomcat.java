@@ -89,6 +89,10 @@ public class EmbeddedTomcat {
 	private boolean addDefaultListeners = false;
 
 	private boolean useNio = false;
+	
+	private int compressionMinSize = -1;
+	
+	private String compressableMimeType;
 
 	private boolean enableNaming = false;
 
@@ -379,6 +383,12 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat useNio() {
 		this.useNio = true;
+		return this;
+	}
+	
+	public EmbeddedTomcat enableCompression(int compressionMinSize, String compressableMimeType) {
+		this.compressionMinSize = compressionMinSize;
+		this.compressableMimeType = compressableMimeType;
 		return this;
 	}
 
@@ -701,6 +711,11 @@ public class EmbeddedTomcat {
 			tomcat.getConnector().setURIEncoding("UTF-8");
 		}
 
+		if (compressionMinSize >= 0) {
+			tomcat.getConnector().setProperty("compression", String.valueOf(compressionMinSize));
+			tomcat.getConnector().setProperty("compressableMimeType", compressableMimeType);
+		}
+		
 		if (shutdownPort != null) {
 			tomcat.getServer().setPort(shutdownPort);
 		}
