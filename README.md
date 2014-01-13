@@ -8,7 +8,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.10</version>
+			<version>1.11</version>
 			<scope>provided</scope>
 		</dependency>
 ```
@@ -64,7 +64,8 @@ public class StartTomcat {
 
 ## CHANGELOG
 
-### 1.11     tbd
+### 1.11     January 13, 2014
+  * Updated to Tomcat 7.0.50
   * Add a call to stop() when somebody sends a shutdown command. Previous versions did not stop the server.  
 
 ### 1.10     October 26, 2013
