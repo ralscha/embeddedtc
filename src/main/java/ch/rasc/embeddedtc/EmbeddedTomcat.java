@@ -39,7 +39,6 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.core.AprLifecycleListener;
-import org.apache.catalina.core.JasperListener;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.core.ThreadLocalLeakPreventionListener;
@@ -692,7 +691,6 @@ public class EmbeddedTomcat {
 
 		if (addDefaultListeners) {
 			Server server = tomcat.getServer();
-			server.addLifecycleListener(new JasperListener());
 			server.addLifecycleListener(new JreMemoryLeakPreventionListener());
 			server.addLifecycleListener(new ThreadLocalLeakPreventionListener());
 		}
