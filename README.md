@@ -64,6 +64,9 @@ public class StartTomcat {
 
 ## CHANGELOG
 
+### 1.12     February 20, 2014
+  * Updated to Tomcat 7.0.52
+
 ### 1.11     January 13, 2014
   * Updated to Tomcat 7.0.50
   * Add a call to stop() when somebody sends a shutdown command. Previous versions did not stop the server.  
