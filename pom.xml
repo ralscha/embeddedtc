@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<prerequisites>
@@ -47,7 +48,7 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>8.0.3</tomcat.version>
+		<tomcat.version>8.0.5</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
@@ -79,7 +80,7 @@
 
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-jdbc</artifactId>
+			<artifactId>tomcat-dbcp</artifactId>
 			<version>${tomcat.version}</version>
 			<exclusions>
 				<exclusion>
@@ -97,19 +98,6 @@
 		</dependency>
 
 	</dependencies>
-
-    <repositories>
-		<repository>
-			<id>tomcat-snapshots</id>
-			<url>https://repository.apache.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>    
-    </repositories>
 
 	<build>
 		<plugins>
@@ -194,7 +182,8 @@
 						<exclude>**/*.txt</exclude>
 						<exclude>**/.gitignore</exclude>
 						<exclude>**/*.md</exclude>
-						<exclude>**/*.py</exclude>						
+						<exclude>**/*.py</exclude>
+						<exclude>**/*.yml</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>
