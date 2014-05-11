@@ -56,8 +56,8 @@ public class ListContextsServlet extends HttpServlet {
 
 		sb.append("<ul>");
 		Container[] contexts = host.findChildren();
-		for (int i = 0; i < contexts.length; i++) {
-			Context context = (Context) contexts[i];
+		for (Container context2 : contexts) {
+			Context context = (Context) context2;
 			if (context != null) {
 				if (!context.getPath().equals("") && context.getState().isAvailable()) {
 
