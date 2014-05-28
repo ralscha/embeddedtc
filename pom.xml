@@ -47,7 +47,7 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>7.0.53</tomcat.version>
+		<tomcat.version>7.0.54</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
