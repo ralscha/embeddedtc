@@ -48,7 +48,7 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>8.0.8</tomcat.version>
+		<tomcat.version>8.0.9</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
@@ -77,6 +77,12 @@
 			<artifactId>tomcat-embed-jasper</artifactId>
 			<version>${tomcat.version}</version>
 		</dependency>
+
+	    <dependency>
+	      <groupId>org.eclipse.jdt.core.compiler</groupId>
+	      <artifactId>ecj</artifactId>
+	      <version>4.4</version>
+	    </dependency>
 
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
