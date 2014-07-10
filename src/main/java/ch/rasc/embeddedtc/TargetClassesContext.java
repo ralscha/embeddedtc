@@ -36,7 +36,8 @@ public class TargetClassesContext extends FileDirContext {
 		if ("/WEB-INF/classes".equals(name)) {
 			FileDirContext fileDirContext = new FileDirContext();
 			fileDirContext.setDocBase("./target/classes");
-			NamingEntry namingEntry = new NamingEntry("/WEB-INF/classes", fileDirContext, -1);
+			NamingEntry namingEntry = new NamingEntry("/WEB-INF/classes", fileDirContext,
+					-1);
 			return Collections.singletonList(namingEntry);
 		}
 

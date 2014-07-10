@@ -37,7 +37,8 @@ public class ListContextsServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void service(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 
 		StringBuilder sb = new StringBuilder(300);
 		sb.append("<!DOCTYPE html>");
