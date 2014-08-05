@@ -57,7 +57,7 @@ import org.apache.juli.logging.LogFactory;
 /**
  * Helper class to simplify setting up a Embedded Tomcat in a IDE and with a Maven web
  * project.
- * 
+ *
  * @author Ralph Schaer
  */
 public class EmbeddedTomcat {
@@ -109,7 +109,7 @@ public class EmbeddedTomcat {
 	/**
 	 * Starts a embedded Tomcat on port 8080 with context path "" and context directory
 	 * current directory + /src/main/webapp
-	 * 
+	 *
 	 * @param args program arguments
 	 */
 	public static void main(String[] args) {
@@ -119,7 +119,7 @@ public class EmbeddedTomcat {
 	/**
 	 * Convenient method to create a embedded Tomcat that listens on port 8080 and with a
 	 * context path of ""
-	 * 
+	 *
 	 * @return EmbeddedTomcat the embedded tomcat
 	 */
 	public static EmbeddedTomcat create() {
@@ -130,7 +130,7 @@ public class EmbeddedTomcat {
 	 * Creates an embedded Tomcat with context path "" and port 8080. Context directory
 	 * points to current directory + /src/main/webapp Change context directory with the
 	 * method <code>setContextDirectory(String)</code>
-	 * 
+	 *
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
 	public EmbeddedTomcat() {
@@ -141,9 +141,9 @@ public class EmbeddedTomcat {
 	 * Creates an embedded Tomcat with context path "" and specified port. Context
 	 * directory points to current directory + /src/main/webapp Change context directory
 	 * with the method <code>setContextDirectory(String)</code>
-	 * 
+	 *
 	 * @param port ip port the server is listening
-	 * 
+	 *
 	 * @see #setContextDirectory(String)
 	 */
 	public EmbeddedTomcat(int port) {
@@ -154,9 +154,9 @@ public class EmbeddedTomcat {
 	 * Creates an embedded Tomcat with the specified context path and port 8080 Context
 	 * directory points to current directory + /src/main/webapp Change context directory
 	 * with the method <code>setContextDirectory(String)</code>
-	 * 
+	 *
 	 * @param contextPath The context path has to start with /
-	 * 
+	 *
 	 * @see #setContextDirectory(String)
 	 */
 	public EmbeddedTomcat(String contextPath) {
@@ -167,10 +167,10 @@ public class EmbeddedTomcat {
 	 * Creates an embedded Tomcat with specified context path and specified port. Context
 	 * directory points to current directory + /src/main/webapp Change context directory
 	 * with the method <code>setContextDirectory(String)</code>
-	 * 
+	 *
 	 * @param contextPath has to start with /
 	 * @param port ip port the server is listening. Shutdown port is set to port + 1000
-	 * 
+	 *
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
 	public EmbeddedTomcat(String contextPath, int port) {
@@ -192,7 +192,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Sets the port the server is listening for http requests
-	 * 
+	 *
 	 * @param port The new port
 	 * @return The embedded Tomcat
 	 */
@@ -203,7 +203,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Sets the contextPath for the webapplication
-	 * 
+	 *
 	 * @param contextPath The new contextPath. Has to start with / or is the empty ""
 	 * string
 	 * @return The embedded Tomcat
@@ -224,7 +224,7 @@ public class EmbeddedTomcat {
 	 * Sets the context directory. Normally this point to the directory that hosts the
 	 * WEB-INF directory. Default value is: current directory + /src/main/webapp This is
 	 * the normal location of the webapplication directory in a Maven web app project.
-	 * 
+	 *
 	 * @param contextDirectory Path name to the directory that contains the web
 	 * application.
 	 * @return The embedded Tomcat
@@ -249,7 +249,7 @@ public class EmbeddedTomcat {
 	 * This list is appended to the default list. The default list is located in the file
 	 * CATALINA_HOME\conf\catalina.properties under the key
 	 * tomcat.util.scan.DefaultJarScanner.jarsToSkip
-	 * 
+	 *
 	 * @param skipJars list of jars, comma separated
 	 * @return The embedded Tomcat
 	 */
@@ -264,7 +264,7 @@ public class EmbeddedTomcat {
 	 * pluggability features. These features include web fragments, annotations, SCIs and
 	 * classes that match @HandlesTypes. The list must be a comma separated list of JAR
 	 * file names.
-	 * 
+	 *
 	 * @param skipJars list of jars, comma separated
 	 * @return The embedded Tomcat
 	 */
@@ -277,7 +277,7 @@ public class EmbeddedTomcat {
 	 * Additional JARs (over and above the default JARs set with
 	 * {@link #skipJarsDefaultJarScanner(String)}) to skip when scanning for TLDs. The
 	 * list must be a comma separated list of JAR file names.
-	 * 
+	 *
 	 * @param skipJars list of jars, comma separated
 	 * @return The embedded Tomcat
 	 */
@@ -293,7 +293,7 @@ public class EmbeddedTomcat {
 	 * <code>
 	 * target/tomcat. + port
 	 * </code>
-	 * 
+	 *
 	 * @param tempDirectory File object that represents the location of the temp directory
 	 * @return The embedded Tomcat
 	 */
@@ -306,10 +306,10 @@ public class EmbeddedTomcat {
 	 * Sets the temporary directory to a directory beneath the target directory <br>
 	 * The directory does not have to exists, Tomcat will create it automatically if
 	 * necessary.
-	 * 
+	 *
 	 * @param name directory name
 	 * @return The embedded Tomcat
-	 * 
+	 *
 	 * @see EmbeddedTomcat#setTempDirectory(File)
 	 */
 	public EmbeddedTomcat setTempDirectoryName(String name) {
@@ -321,7 +321,7 @@ public class EmbeddedTomcat {
 	 * The EmbeddedTomcat listens per default for shutdown commands on port 8005 with the
 	 * shutdown command <code>SHUTDOWN</code>. Calling this method disables adding the
 	 * shutdown hook.
-	 * 
+	 *
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat dontAddShutdownHook() {
@@ -333,7 +333,7 @@ public class EmbeddedTomcat {
 	 * Before starting the embedded Tomcat the programm tries to stop a previous process
 	 * by sendig the shutdown command to the shutdown port. It then waits for the port to
 	 * become available. It checks this every second for the specified number of seconds
-	 * 
+	 *
 	 * @param seconds number of seconds
 	 * @return The embedded Tomcat
 	 */
@@ -345,10 +345,10 @@ public class EmbeddedTomcat {
 	/**
 	 * Specifies the port the server is listen for the shutdown command. Default is port
 	 * 8005
-	 * 
+	 *
 	 * @param shutdownPort the shutdown port
 	 * @return The embedded Tomcat *
-	 * 
+	 *
 	 * @see EmbeddedTomcat#dontAddShutdownHook()
 	 */
 	public EmbeddedTomcat setShutdownPort(int shutdownPort) {
@@ -358,7 +358,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Set the privileged flag for this web application.
-	 * 
+	 *
 	 * @param privileged The new privileged flag
 	 * @return The embedded Tomcat
 	 */
@@ -371,7 +371,7 @@ public class EmbeddedTomcat {
 	 * Instructs the embedded tomcat to use the Non Blocking Connector
 	 * (org.apache.coyote.http11.Http11NioProtocol) instead of the Blocking Connector
 	 * (org.apache.coyote.http11.Http11Protocol)
-	 * 
+	 *
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat useNio() {
@@ -388,7 +388,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Enables JNDI naming which is disabled by default.
-	 * 
+	 *
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat enableNaming() {
@@ -400,7 +400,7 @@ public class EmbeddedTomcat {
 	 * Installs the default listeners AprLifecycleListener, JasperListener,
 	 * JreMemoryLeakPreventionListener, GlobalResourcesLifecycleListener and
 	 * ThreadLocalLeakPreventionListener during startup.
-	 * 
+	 *
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat addDefaultListeners() {
@@ -410,7 +410,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Set the silent flag of Tomcat. If true Tomcat no longer prints any log messages
-	 * 
+	 *
 	 * @param silent The new silent flag
 	 * @return The embedded Tomcat
 	 */
@@ -424,17 +424,17 @@ public class EmbeddedTomcat {
 	 * <p>
 	 * Example:<br>
 	 * Tomcat context xml file
-	 * 
+	 *
 	 * <pre>
 	 *    &lt;Environment name="aparam"
 	 *                 value="test"
 	 *                 type="java.lang.String"
 	 *                 override="false"/&gt;
 	 * </pre>
-	 * 
+	 *
 	 * A programmatic way to add this environment to the embedded Tomcat is by calling
 	 * this method
-	 * 
+	 *
 	 * <pre>
 	 * ContextEnvironment env = new ContextEnvironment();
 	 * env.setType(&quot;java.lang.String&quot;);
@@ -442,11 +442,11 @@ public class EmbeddedTomcat {
 	 * env.setValue(&quot;test&quot;);
 	 * embeddedTomcat.addContextEnvironment(env);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * @param env context environment variable
 	 * @return The embedded Tomcat
-	 * 
+	 *
 	 * @see ContextEnvironment
 	 * @see NamingResources#addEnvironment(ContextEnvironment)
 	 * @see EmbeddedTomcat#addContextEnvironment(String, String, String)
@@ -460,11 +460,11 @@ public class EmbeddedTomcat {
 	/**
 	 * Adds a {@link ContextResource} object to the list of resources in the embedded
 	 * Tomcat.
-	 * 
+	 *
 	 * <p>
 	 * Example:<br>
 	 * Tomcat context xml file
-	 * 
+	 *
 	 * <pre>
 	 *  &ltResource name="jdbc/ds" auth="Container"
 	 *     type="javax.sql.DataSource" username="sa" password=""
@@ -473,9 +473,9 @@ public class EmbeddedTomcat {
 	 *     maxActive="20" maxIdle="4" maxWait="10000"
 	 *     defaultAutoCommit="false"/&gt;
 	 * </pre>
-	 * 
+	 *
 	 * Programmatic way:
-	 * 
+	 *
 	 * <pre>
 	 * ContextResource res = new ContextResource();
 	 * res.setName(&quot;jdbc/ds&quot;);
@@ -492,10 +492,10 @@ public class EmbeddedTomcat {
 	 * 
 	 * embeddedTomcat.addContextResource(res);
 	 * </pre>
-	 * 
+	 *
 	 * @param res resource object
 	 * @return The embedded Tomcat
-	 * 
+	 *
 	 * @see ContextResource
 	 * @see NamingResources#addResource(ContextResource)
 	 */
@@ -516,29 +516,29 @@ public class EmbeddedTomcat {
 	 * Convenient method for adding a context environment to the embedded Tomcat. Creates
 	 * a <code>ContextEnvironment</code> object and adds it to the list of the context
 	 * environments.
-	 * 
+	 *
 	 * <p>
 	 * Example:<br>
 	 * Tomcat context xml file
-	 * 
+	 *
 	 * <pre>
 	 *    &lt;Environment name="aparam"
 	 *                 value="test"
 	 *                 type="java.lang.String"
 	 *                 override="false"/&gt;
 	 * </pre>
-	 * 
+	 *
 	 * Programmatic way:
-	 * 
+	 *
 	 * <pre>
 	 * embeddedTomcat.addContextEnvironment(&quot;aparam&quot;, &quot;test&quot;, &quot;java.lang.String&quot;);
 	 * </pre>
-	 * 
+	 *
 	 * @param name name of the context environment
 	 * @param value value of the context environment
 	 * @param type type of the context environment
 	 * @return The embedded Tomcat
-	 * 
+	 *
 	 * @see ContextEnvironment
 	 * @see NamingResources#addEnvironment(ContextEnvironment)
 	 * @see EmbeddedTomcat#addContextEnvironment(ContextEnvironment)
@@ -556,15 +556,15 @@ public class EmbeddedTomcat {
 	/**
 	 * Convenient method for adding a context environment with type java.lang.String to
 	 * the embedded Tomcat.
-	 * 
+	 *
 	 * <pre>
 	 * embeddedTomcat.addContextEnvironment(&quot;aparam&quot;, &quot;test&quot;);
 	 * </pre>
-	 * 
+	 *
 	 * @param name name of the context environment
 	 * @param value value of the context environment
 	 * @return The embedded Tomcat
-	 * 
+	 *
 	 * @see ContextEnvironment
 	 * @see NamingResources#addEnvironment(ContextEnvironment)
 	 * @see EmbeddedTomcat#addContextEnvironment(ContextEnvironment)
@@ -577,7 +577,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Read ContextEnvironment and ContextResource definition from a text file.
-	 * 
+	 *
 	 * @param contextFile Location of the context file
 	 * @return The embedded Tomcat
 	 * @deprecated use {@link #setContextFile(URL)}
@@ -594,7 +594,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Sets the location of the context file that configures this web application
-	 * 
+	 *
 	 * @param contextFileURL Location of the context file
 	 * @return The embedded Tomcat instance
 	 */
@@ -605,7 +605,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Sets the location of the context file that configures this web application
-	 * 
+	 *
 	 * @param contextFile Location of the context file
 	 * @return The embedded Tomcat instance
 	 */
@@ -621,7 +621,7 @@ public class EmbeddedTomcat {
 
 	/**
 	 * Read ContextEnvironment and ContextResource definition from a text file.
-	 * 
+	 *
 	 * @param contextFile Location to a context file
 	 * @return The embedded Tomcat
 	 * @deprecated use {@link #setContextFile(String)}
@@ -640,7 +640,7 @@ public class EmbeddedTomcat {
 	/**
 	 * Starts the embedded Tomcat and do not wait for incoming requests. Returns
 	 * immediately if the configured port is in use.
-	 * 
+	 *
 	 * @see EmbeddedTomcat#startAndWait()
 	 */
 	public void start() {
@@ -650,7 +650,7 @@ public class EmbeddedTomcat {
 	/**
 	 * Starts the embedded Tomcat and waits for incoming requests. Returns immediately if
 	 * the configured port is in use.
-	 * 
+	 *
 	 * @see EmbeddedTomcat#start()
 	 */
 	public void startAndWait() {

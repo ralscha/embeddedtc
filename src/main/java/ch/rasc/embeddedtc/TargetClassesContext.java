@@ -25,7 +25,7 @@ import org.apache.naming.resources.FileDirContext;
 
 /**
  * Special FileDirContext that mapps /WEB-INF/classes to ./target/classes
- * 
+ *
  * @author Ralph Schaer
  */
 public class TargetClassesContext extends FileDirContext {
