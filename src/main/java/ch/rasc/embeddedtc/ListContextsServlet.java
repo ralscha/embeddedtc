@@ -37,7 +37,8 @@ public class ListContextsServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void service(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 
 		StringBuilder sb = new StringBuilder(300);
 		sb.append("<!DOCTYPE html>");
@@ -56,8 +57,8 @@ public class ListContextsServlet extends HttpServlet {
 
 		sb.append("<ul>");
 		Container[] contexts = host.findChildren();
-		for (int i = 0; i < contexts.length; i++) {
-			Context context = (Context) contexts[i];
+		for (Container container : contexts) {
+			Context context = (Context) container;
 			if (context != null) {
 				if (!context.getPath().equals("") && context.getState().isAvailable()) {
 
