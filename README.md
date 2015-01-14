@@ -8,7 +8,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.16</version>
+			<version>1.17</version>
 			<scope>provided</scope>
 		</dependency>
 ```
@@ -63,6 +63,11 @@ public class StartTomcat {
 
 
 ## CHANGELOG
+
+### 1.17     January ??, 2015
+  * Updated to Tomcat 7.0.57
+  * Add support for TLS
+  * Add config option for maxPostSize
 
 ### 1.16     October 8, 2014
   * Updated to Tomcat 7.0.56
