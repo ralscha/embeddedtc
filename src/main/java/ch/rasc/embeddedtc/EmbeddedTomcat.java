@@ -208,6 +208,7 @@ public class EmbeddedTomcat {
 		setContextPath(contextPath);
 		setHttpPort(httpPort);
 		setShutdownPort(httpPort + 1000);
+		setHttpsPort(httpsPort);
 		setSecondsToWaitBeforePortBecomesAvailable(10);
 		setPrivileged(false);
 		setSilent(false);
