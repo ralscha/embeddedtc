@@ -72,15 +72,15 @@ public class EmbeddedTomcat {
 
 	private int secondsToWaitBeforePortBecomesAvailable;
 
-    private int httpsPort;
+	private int httpsPort;
 
-    private String keyStoreFile;
+	private String keyStoreFile;
 
-    private String keyAlias;
+	private String keyAlias;
 
-    private String keyStorePass;
+	private String keyStorePass;
 
-    private String sslProtocol;
+	private String sslProtocol;
 
 	private String tempDirectory;
 
@@ -212,51 +212,52 @@ public class EmbeddedTomcat {
 	}
 
 	/**
-     * Sets the port the server is listening for https requests
-     *
-     * @param port The new port
-     * @return The embedded Tomcat
-     */
-    public EmbeddedTomcat setHttpsPort(int httpsPort) {
-        this.httpsPort = httpsPort;
-        return this;
-    }
+	 * Sets the port the server is listening for https requests
+	 *
+	 * @param port The new port
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setHttpsPort(int httpsPort) {
+		this.httpsPort = httpsPort;
+		return this;
+	}
 
-    /**
-     * The pathname of the keystore file where you have stored the server certificate
-     * to be loaded. By default, the pathname is the file ".keystore" in the operating
-     * system home directory of the user that is running Tomcat.
-     *
-     * @param keyStoreFile The keystore pathname
-     * @return The embedded Tomcat
-     */
-    public EmbeddedTomcat setKeyStoreFile(String keyStoreFile) {
-        this.keyStoreFile = keyStoreFile;
-        return this;
-    }
-    /**
-     * The alias used to for the server certificate in the keystore. If not specified
-     * the first key read in the keystore will be used.
-     *
-     * @param keyAlias The key alias
-     * @return The embedded Tomcat
-     */
-    public EmbeddedTomcat setKeyAlias(String keyAlias) {
-        this.keyAlias = keyAlias;
-        return this;
-    }
+	/**
+	 * The pathname of the keystore file where you have stored the server certificate to
+	 * be loaded. By default, the pathname is the file ".keystore" in the operating system
+	 * home directory of the user that is running Tomcat.
+	 *
+	 * @param keyStoreFile The keystore pathname
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setKeyStoreFile(String keyStoreFile) {
+		this.keyStoreFile = keyStoreFile;
+		return this;
+	}
 
-    /**
-     * The password used to access the server certificate from the specified keystore
-     * file. The default value is "changeit".
-     *
-     * @param keyStorePass The keystore password
-     * @return The embedded Tomcat
-     */
-    public EmbeddedTomcat setKeyStorePass(String keyStorePass) {
-        this.keyStorePass = keyStorePass;
-        return this;
-    }
+	/**
+	 * The alias used to for the server certificate in the keystore. If not specified the
+	 * first key read in the keystore will be used.
+	 *
+	 * @param keyAlias The key alias
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setKeyAlias(String keyAlias) {
+		this.keyAlias = keyAlias;
+		return this;
+	}
+
+	/**
+	 * The password used to access the server certificate from the specified keystore
+	 * file. The default value is "changeit".
+	 *
+	 * @param keyStorePass The keystore password
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setKeyStorePass(String keyStorePass) {
+		this.keyStorePass = keyStorePass;
+		return this;
+	}
 
 	/**
 	 * Sets the contextPath for the webapplication
@@ -546,7 +547,7 @@ public class EmbeddedTomcat {
 	 * res.setProperty(&quot;maxIdle&quot;, &quot;4&quot;);
 	 * res.setProperty(&quot;maxWait&quot;, &quot;10000&quot;);
 	 * res.setProperty(&quot;defaultAutoCommit&quot;, &quot;false&quot;);
-	 *
+	 * 
 	 * embeddedTomcat.addContextResource(res);
 	 * </pre>
 	 *
@@ -769,26 +770,28 @@ public class EmbeddedTomcat {
 		}
 
 		if (httpsPort != 0) {
-            final Connector httpsConnector;
-            if (useNio) {
-                httpsConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-            } else {
-                httpsConnector = new Connector("HTTP/1.1");
-            }
-            httpsConnector.setSecure(true);
-            httpsConnector.setPort(8443);
-            httpsConnector.setScheme("https");
-            httpsConnector.setURIEncoding("UTF-8");
+			final Connector httpsConnector;
+			if (useNio) {
+				httpsConnector = new Connector(
+						"org.apache.coyote.http11.Http11NioProtocol");
+			}
+			else {
+				httpsConnector = new Connector("HTTP/1.1");
+			}
+			httpsConnector.setSecure(true);
+			httpsConnector.setPort(httpsPort);
+			httpsConnector.setScheme("https");
+			httpsConnector.setURIEncoding("UTF-8");
 
-            httpsConnector.setProperty("SSLEnabled", "true");
-            httpsConnector.setProperty("keyAlias", keyAlias);
-            httpsConnector.setProperty("keystoreFile", keyStoreFile);
-            httpsConnector.setProperty("keystorePass", keyStorePass);
-            httpsConnector.setProperty("sslProtocol", sslProtocol);
+			httpsConnector.setProperty("SSLEnabled", "true");
+			httpsConnector.setProperty("keyAlias", keyAlias);
+			httpsConnector.setProperty("keystoreFile", keyStoreFile);
+			httpsConnector.setProperty("keystorePass", keyStorePass);
+			httpsConnector.setProperty("sslProtocol", sslProtocol);
 
-            tomcat.getEngine().setDefaultHost("localhost");
-            tomcat.getService().addConnector(httpsConnector);
-        }
+			tomcat.getEngine().setDefaultHost("localhost");
+			tomcat.getService().addConnector(httpsConnector);
+		}
 
 		if (compressionMinSize >= 0) {
 			tomcat.getConnector().setProperty("compression",
