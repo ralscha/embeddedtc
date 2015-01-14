@@ -38,6 +38,7 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
 import org.apache.catalina.WebResourceRoot;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.JreMemoryLeakPreventionListener;
 import org.apache.catalina.core.StandardServer;
@@ -67,11 +68,23 @@ public class EmbeddedTomcat {
 
 	private String contextPath;
 
-	private Integer port;
+	private Integer httpPort;
 
 	private Integer shutdownPort;
 
 	private int secondsToWaitBeforePortBecomesAvailable;
+
+	public int maxPostSize = 2097152;
+
+	private int httpsPort;
+
+	private String keyStoreFile;
+
+	private String keyAlias;
+
+	private String keyStorePass;
+
+	private String sslProtocol;
 
 	private String tempDirectory;
 
@@ -88,6 +101,10 @@ public class EmbeddedTomcat {
 	private boolean silent;
 
 	private boolean addDefaultListeners = false;
+
+	private int compressionMinSize = -1;
+
+	private String compressableMimeType;
 
 	private boolean enableNaming = false;
 
@@ -164,16 +181,34 @@ public class EmbeddedTomcat {
 	 * with the method <code>setContextDirectory(String)</code>
 	 *
 	 * @param contextPath has to start with /
-	 * @param port ip port the server is listening. Shutdown port is set to port + 1000
+	 * @param httpPort ip port the server is listening for http requests. Shutdown port is
+	 * set to port + 1000
 	 *
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
-	public EmbeddedTomcat(String contextPath, int port) {
+	public EmbeddedTomcat(String contextPath, int httpPort) {
+		this(contextPath, httpPort, 0);
+	}
+
+	/**
+	 * Creates an embedded Tomcat with specified context path and specified ports. Context
+	 * directory points to current directory + /src/main/webapp Change context directory
+	 * with the method <code>setContextDirectory(String)</code>
+	 *
+	 * @param contextPath has to start with /
+	 * @param httpPort ip port the server is listening for http requests. Shutdown port is
+	 * set to port + 1000
+	 * @param httpsPort ip port the server is listening for https requests.
+	 *
+	 * @see EmbeddedTomcat#setContextDirectory(String)
+	 */
+	public EmbeddedTomcat(String contextPath, int httpPort, int httpsPort) {
 		tomcat = null;
 
 		setContextPath(contextPath);
-		setPort(port);
-		setShutdownPort(port + 1000);
+		setHttpPort(httpPort);
+		setShutdownPort(httpPort + 1000);
+		setHttpsPort(httpsPort);
 		setSecondsToWaitBeforePortBecomesAvailable(10);
 		setPrivileged(false);
 		setSilent(false);
@@ -186,13 +221,83 @@ public class EmbeddedTomcat {
 	}
 
 	/**
+	 * @deprecated Use {@link #setHttpPort(int)} instead
+	 */
+	@Deprecated
+	public EmbeddedTomcat setPort(int port) {
+		return setHttpPort(port);
+	}
+
+	/**
 	 * Sets the port the server is listening for http requests
 	 *
-	 * @param port The new port
+	 * @param httpPort The new port
 	 * @return The embedded Tomcat
 	 */
-	public EmbeddedTomcat setPort(int port) {
-		this.port = port;
+	public EmbeddedTomcat setHttpPort(int httpPort) {
+		this.httpPort = httpPort;
+		return this;
+	}
+
+	/**
+	 * The maximum size in bytes of the POST which will be handled by the container FORM
+	 * URL parameter parsing. The limit can be disabled by setting this attribute to a
+	 * value less than or equal to 0. If not specified, this attribute is set to 2097152
+	 * (2 megabytes).
+	 *
+	 * @param maxPostSize maximum size in bytes for POST requests
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setMaxPostSize(int maxPostSize) {
+		this.maxPostSize = maxPostSize;
+		return this;
+	}
+
+	/**
+	 * Sets the port the server is listening for https requests
+	 *
+	 * @param httpsPort The new port
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setHttpsPort(int httpsPort) {
+		this.httpsPort = httpsPort;
+		return this;
+	}
+
+	/**
+	 * The pathname of the keystore file where you have stored the server certificate to
+	 * be loaded. By default, the pathname is the file ".keystore" in the operating system
+	 * home directory of the user that is running Tomcat.
+	 *
+	 * @param keyStoreFile The keystore pathname
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setKeyStoreFile(String keyStoreFile) {
+		this.keyStoreFile = keyStoreFile;
+		return this;
+	}
+
+	/**
+	 * The alias used to for the server certificate in the keystore. If not specified the
+	 * first key read in the keystore will be used.
+	 *
+	 * @param keyAlias The key alias
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setKeyAlias(String keyAlias) {
+		this.keyAlias = keyAlias;
+		return this;
+	}
+
+	/**
+	 * The password used to access the server certificate from the specified keystore
+	 * file. The default value is "changeit".
+	 *
+	 * @param keyStorePass The keystore password
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setKeyStorePass(String keyStorePass) {
+		this.keyStorePass = keyStorePass;
 		return this;
 	}
 
@@ -359,6 +464,14 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setPrivileged(boolean privileged) {
 		this.privileged = privileged;
+		return this;
+	}
+
+	@SuppressWarnings("hiding")
+	public EmbeddedTomcat enableCompression(int compressionMinSize,
+			String compressableMimeType) {
+		this.compressionMinSize = compressionMinSize;
+		this.compressableMimeType = compressableMimeType;
 		return this;
 	}
 
@@ -603,11 +716,11 @@ public class EmbeddedTomcat {
 		// try to shutdown a previous Tomcat
 		sendShutdownCommand();
 
-		try (final ServerSocket srv = new ServerSocket(port)) {
+		try (final ServerSocket srv = new ServerSocket(httpPort)) {
 			// nothing here
 		}
 		catch (IOException e) {
-			log.error("PORT " + port + " ALREADY IN USE");
+			log.error("PORT " + httpPort + " ALREADY IN USE");
 			return;
 		}
 
@@ -625,7 +738,7 @@ public class EmbeddedTomcat {
 		tomcat = new Tomcat();
 
 		if (tempDirectory == null) {
-			tempDirectory = new File(".", "/target/tomcat." + port).getAbsolutePath();
+			tempDirectory = new File(".", "/target/tomcat." + httpPort).getAbsolutePath();
 		}
 
 		tomcat.setBaseDir(tempDirectory);
@@ -638,8 +751,40 @@ public class EmbeddedTomcat {
 			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
 		}
 
-		tomcat.setPort(port);
+		tomcat.setPort(httpPort);
 		tomcat.getConnector().setURIEncoding("UTF-8");
+		tomcat.getConnector().setMaxPostSize(maxPostSize);
+
+		if (compressionMinSize >= 0) {
+			tomcat.getConnector().setProperty("compression",
+					String.valueOf(compressionMinSize));
+			tomcat.getConnector().setProperty("compressableMimeType",
+					compressableMimeType);
+		}
+
+		if (httpsPort != 0) {
+			final Connector httpsConnector = new Connector("HTTP/1.1");
+			httpsConnector.setSecure(true);
+			httpsConnector.setPort(httpsPort);
+			httpsConnector.setMaxPostSize(maxPostSize);
+			httpsConnector.setScheme("https");
+			httpsConnector.setURIEncoding("UTF-8");
+
+			httpsConnector.setProperty("SSLEnabled", "true");
+			httpsConnector.setProperty("keyAlias", keyAlias);
+			httpsConnector.setProperty("keystoreFile", keyStoreFile);
+			httpsConnector.setProperty("keystorePass", keyStorePass);
+			httpsConnector.setProperty("sslProtocol", sslProtocol);
+
+			if (compressionMinSize >= 0) {
+				httpsConnector.setProperty("compression",
+						String.valueOf(compressionMinSize));
+				httpsConnector.setProperty("compressableMimeType", compressableMimeType);
+			}
+
+			tomcat.getEngine().setDefaultHost("localhost");
+			tomcat.getService().addConnector(httpsConnector);
+		}
 
 		if (shutdownPort != null) {
 			tomcat.getServer().setPort(shutdownPort);
@@ -796,7 +941,7 @@ public class EmbeddedTomcat {
 			// available
 			int count = 0;
 			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
-				try (final ServerSocket srv = new ServerSocket(port)) {
+				try (final ServerSocket srv = new ServerSocket(httpPort)) {
 					return;
 				}
 				catch (IOException e) {
