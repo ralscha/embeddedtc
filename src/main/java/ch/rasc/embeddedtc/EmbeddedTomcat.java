@@ -814,6 +814,13 @@ public class EmbeddedTomcat {
 			tomcat.getConnector().setMaxPostSize(maxPostSize);
 		}
 
+		if (compressionMinSize >= 0) {
+			tomcat.getConnector().setProperty("compression",
+					String.valueOf(compressionMinSize));
+			tomcat.getConnector().setProperty("compressableMimeType",
+					compressableMimeType);
+		}
+
 		if (httpsPort != 0) {
 			final Connector httpsConnector;
 			if (useNio) {
@@ -835,15 +842,14 @@ public class EmbeddedTomcat {
 			httpsConnector.setProperty("keystorePass", keyStorePass);
 			httpsConnector.setProperty("sslProtocol", sslProtocol);
 
+			if (compressionMinSize >= 0) {
+				httpsConnector.setProperty("compression",
+						String.valueOf(compressionMinSize));
+				httpsConnector.setProperty("compressableMimeType", compressableMimeType);
+			}
+
 			tomcat.getEngine().setDefaultHost("localhost");
 			tomcat.getService().addConnector(httpsConnector);
-		}
-
-		if (compressionMinSize >= 0) {
-			tomcat.getConnector().setProperty("compression",
-					String.valueOf(compressionMinSize));
-			tomcat.getConnector().setProperty("compressableMimeType",
-					compressableMimeType);
 		}
 
 		if (shutdownPort != null) {
