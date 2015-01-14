@@ -66,11 +66,13 @@ public class EmbeddedTomcat {
 
 	private String contextPath;
 
-	private Integer port;
+	private Integer httpPort;
 
 	private Integer shutdownPort;
 
 	private int secondsToWaitBeforePortBecomesAvailable;
+
+	public int maxPostSize = 2097152;
 
 	private int httpsPort;
 
@@ -179,16 +181,33 @@ public class EmbeddedTomcat {
 	 * with the method <code>setContextDirectory(String)</code>
 	 *
 	 * @param contextPath has to start with /
-	 * @param port ip port the server is listening. Shutdown port is set to port + 1000
+	 * @param httpPort ip port the server is listening for http requests. Shutdown port is
+	 * set to port + 1000
 	 *
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
-	public EmbeddedTomcat(String contextPath, int port) {
+	public EmbeddedTomcat(String contextPath, int httpPort) {
+		this(contextPath, httpPort, 0);
+	}
+
+	/**
+	 * Creates an embedded Tomcat with specified context path and specified ports. Context
+	 * directory points to current directory + /src/main/webapp Change context directory
+	 * with the method <code>setContextDirectory(String)</code>
+	 *
+	 * @param contextPath has to start with /
+	 * @param httpPort ip port the server is listening for http requests. Shutdown port is
+	 * set to port + 1000
+	 * @param httpsPort ip port the server is listening for https requests.
+	 *
+	 * @see EmbeddedTomcat#setContextDirectory(String)
+	 */
+	public EmbeddedTomcat(String contextPath, int httpPort, int httpsPort) {
 		tomcat = null;
 
 		setContextPath(contextPath);
-		setPort(port);
-		setShutdownPort(port + 1000);
+		setHttpPort(httpPort);
+		setShutdownPort(httpPort + 1000);
 		setSecondsToWaitBeforePortBecomesAvailable(10);
 		setPrivileged(false);
 		setSilent(false);
@@ -201,13 +220,35 @@ public class EmbeddedTomcat {
 	}
 
 	/**
+	 * @deprecated Use {@link #setHttpPort(int)} instead
+	 */
+	@Deprecated
+	public EmbeddedTomcat setPort(int port) {
+		return setHttpPort(port);
+	}
+
+	/**
 	 * Sets the port the server is listening for http requests
 	 *
 	 * @param port The new port
 	 * @return The embedded Tomcat
 	 */
-	public EmbeddedTomcat setPort(int port) {
-		this.port = port;
+	public EmbeddedTomcat setHttpPort(int httpPort) {
+		this.httpPort = httpPort;
+		return this;
+	}
+
+	/**
+	 * The maximum size in bytes of the POST which will be handled by the container FORM
+	 * URL parameter parsing. The limit can be disabled by setting this attribute to a
+	 * value less than or equal to 0. If not specified, this attribute is set to 2097152
+	 * (2 megabytes).
+	 *
+	 * @param maxPostSize maximum size in bytes for POST requests
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat setMaxPostSize(int maxPostSize) {
+		this.maxPostSize = maxPostSize;
 		return this;
 	}
 
@@ -437,6 +478,7 @@ public class EmbeddedTomcat {
 		return this;
 	}
 
+	@SuppressWarnings("hiding")
 	public EmbeddedTomcat enableCompression(int compressionMinSize,
 			String compressableMimeType) {
 		this.compressionMinSize = compressionMinSize;
@@ -721,11 +763,11 @@ public class EmbeddedTomcat {
 		sendShutdownCommand();
 
 		try {
-			final ServerSocket srv = new ServerSocket(port);
+			final ServerSocket srv = new ServerSocket(httpPort);
 			srv.close();
 		}
 		catch (IOException e) {
-			log.error("PORT " + port + " ALREADY IN USE");
+			log.error("PORT " + httpPort + " ALREADY IN USE");
 			return;
 		}
 
@@ -743,7 +785,7 @@ public class EmbeddedTomcat {
 		tomcat = new Tomcat();
 
 		if (tempDirectory == null) {
-			tempDirectory = new File(".", "/target/tomcat." + port).getAbsolutePath();
+			tempDirectory = new File(".", "/target/tomcat." + httpPort).getAbsolutePath();
 		}
 
 		tomcat.setBaseDir(tempDirectory);
@@ -759,14 +801,16 @@ public class EmbeddedTomcat {
 		if (useNio) {
 			Connector connector = new Connector(
 					"org.apache.coyote.http11.Http11NioProtocol");
-			connector.setPort(port);
+			connector.setPort(httpPort);
+			connector.setMaxPostSize(maxPostSize);
 			connector.setURIEncoding("UTF-8");
 			tomcat.setConnector(connector);
 			tomcat.getService().addConnector(connector);
 		}
 		else {
-			tomcat.setPort(port);
+			tomcat.setPort(httpPort);
 			tomcat.getConnector().setURIEncoding("UTF-8");
+			tomcat.getConnector().setMaxPostSize(maxPostSize);
 		}
 
 		if (httpsPort != 0) {
@@ -780,6 +824,7 @@ public class EmbeddedTomcat {
 			}
 			httpsConnector.setSecure(true);
 			httpsConnector.setPort(httpsPort);
+			httpsConnector.setMaxPostSize(maxPostSize);
 			httpsConnector.setScheme("https");
 			httpsConnector.setURIEncoding("UTF-8");
 
@@ -956,7 +1001,7 @@ public class EmbeddedTomcat {
 			int count = 0;
 			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
 				try {
-					final ServerSocket srv = new ServerSocket(port);
+					final ServerSocket srv = new ServerSocket(httpPort);
 					srv.close();
 					return;
 				}
