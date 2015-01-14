@@ -231,7 +231,7 @@ public class EmbeddedTomcat {
 	/**
 	 * Sets the port the server is listening for http requests
 	 *
-	 * @param port The new port
+	 * @param httpPort The new port
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat setHttpPort(int httpPort) {
@@ -256,7 +256,7 @@ public class EmbeddedTomcat {
 	/**
 	 * Sets the port the server is listening for https requests
 	 *
-	 * @param port The new port
+	 * @param httpsPort The new port
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat setHttpsPort(int httpsPort) {
