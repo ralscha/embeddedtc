@@ -13,7 +13,7 @@
 
 	<groupId>ch.rasc</groupId>
 	<artifactId>embeddedtc</artifactId>
-	<version>1.17</version>
+	<version>1.18-SNAPSHOT</version>
 
 	<inceptionYear>2012</inceptionYear>
 	<name>Embedded Tomcat Helper</name>
