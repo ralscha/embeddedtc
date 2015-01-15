@@ -61,10 +61,15 @@ public class StartTomcat {
 }
 ```
 
+## CHANGELOG Tomcat 8
 
-## CHANGELOG
+### 2.0     January 15, 2015
+   * Initial release
 
-### 1.17     January ??, 2015
+
+## CHANGELOG Tomcat 7
+
+### 1.17     January 15, 2015
   * Updated to Tomcat 7.0.57
   * Add support for TLS
   * Add config option for maxPostSize
