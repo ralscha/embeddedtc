@@ -53,7 +53,7 @@ public class ListContextsServlet extends HttpServlet {
 		sb.append("No context on this server matched or handled this request.");
 		sb.append("<br>Contexts known to this server are: ");
 
-		Host host = (Host) parentContext.getParent();
+		Host host = (Host) this.parentContext.getParent();
 
 		sb.append("<ul>");
 		Container[] contexts = host.findChildren();

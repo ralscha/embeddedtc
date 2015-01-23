@@ -203,7 +203,7 @@ public class EmbeddedTomcat {
 	 * @see EmbeddedTomcat#setContextDirectory(String)
 	 */
 	public EmbeddedTomcat(String contextPath, int httpPort, int httpsPort) {
-		tomcat = null;
+		this.tomcat = null;
 
 		setContextPath(contextPath);
 		setHttpPort(httpPort);
@@ -413,7 +413,7 @@ public class EmbeddedTomcat {
 	 * @see EmbeddedTomcat#setTempDirectory(File)
 	 */
 	public EmbeddedTomcat setTempDirectoryName(String name) {
-		tempDirectory = new File(".", "target/" + name).getAbsolutePath();
+		this.tempDirectory = new File(".", "target/" + name).getAbsolutePath();
 		return this;
 	}
 
@@ -425,7 +425,7 @@ public class EmbeddedTomcat {
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat dontAddShutdownHook() {
-		shutdownPort = null;
+		this.shutdownPort = null;
 		return this;
 	}
 
@@ -438,7 +438,7 @@ public class EmbeddedTomcat {
 	 * @return The embedded Tomcat
 	 */
 	public EmbeddedTomcat setSecondsToWaitBeforePortBecomesAvailable(int seconds) {
-		secondsToWaitBeforePortBecomesAvailable = seconds;
+		this.secondsToWaitBeforePortBecomesAvailable = seconds;
 		return this;
 	}
 
@@ -542,7 +542,7 @@ public class EmbeddedTomcat {
 	 * @see EmbeddedTomcat#addContextEnvironmentString(String, String)
 	 */
 	public EmbeddedTomcat addContextEnvironment(ContextEnvironment env) {
-		contextEnvironments.add(env);
+		this.contextEnvironments.add(env);
 		return this;
 	}
 
@@ -589,7 +589,7 @@ public class EmbeddedTomcat {
 	 * @see NamingResources#addResource(ContextResource)
 	 */
 	public EmbeddedTomcat addContextResource(ContextResource res) {
-		contextResources.add(res);
+		this.contextResources.add(res);
 		return this;
 	}
 
@@ -597,7 +597,7 @@ public class EmbeddedTomcat {
 		ApplicationParameter parameter = new ApplicationParameter();
 		parameter.setName(name);
 		parameter.setValue(value);
-		contextInitializationParameters.add(parameter);
+		this.contextInitializationParameters.add(parameter);
 		return this;
 	}
 
@@ -716,11 +716,11 @@ public class EmbeddedTomcat {
 		// try to shutdown a previous Tomcat
 		sendShutdownCommand();
 
-		try (final ServerSocket srv = new ServerSocket(httpPort)) {
+		try (final ServerSocket srv = new ServerSocket(this.httpPort)) {
 			// nothing here
 		}
 		catch (IOException e) {
-			log.error("PORT " + httpPort + " ALREADY IN USE");
+			log.error("PORT " + this.httpPort + " ALREADY IN USE");
 			return;
 		}
 
@@ -729,68 +729,70 @@ public class EmbeddedTomcat {
 		CatalinaProperties.getProperty("dummy");
 
 		appendSkipJars("tomcat.util.scan.DefaultJarScanner.jarsToSkip",
-				skipJarsDefaultJarScanner);
+				this.skipJarsDefaultJarScanner);
 		appendSkipJars("org.apache.catalina.startup.ContextConfig.jarsToSkip",
-				skipJarsContextConfig);
+				this.skipJarsContextConfig);
 		appendSkipJars("org.apache.catalina.startup.TldConfig.jarsToSkip",
-				skipJarsTldConfig);
+				this.skipJarsTldConfig);
 
-		tomcat = new Tomcat();
+		this.tomcat = new Tomcat();
 
-		if (tempDirectory == null) {
-			tempDirectory = new File(".", "/target/tomcat." + httpPort).getAbsolutePath();
+		if (this.tempDirectory == null) {
+			this.tempDirectory = new File(".", "/target/tomcat." + this.httpPort)
+					.getAbsolutePath();
 		}
 
-		tomcat.setBaseDir(tempDirectory);
+		this.tomcat.setBaseDir(this.tempDirectory);
 
-		if (silent) {
-			tomcat.setSilent(true);
+		if (this.silent) {
+			this.tomcat.setSilent(true);
 		}
 
-		if (addDefaultListeners) {
-			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
+		if (this.addDefaultListeners) {
+			this.tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
 		}
 
-		tomcat.setPort(httpPort);
-		tomcat.getConnector().setURIEncoding("UTF-8");
-		tomcat.getConnector().setMaxPostSize(maxPostSize);
+		this.tomcat.setPort(this.httpPort);
+		this.tomcat.getConnector().setURIEncoding("UTF-8");
+		this.tomcat.getConnector().setMaxPostSize(this.maxPostSize);
 
-		if (compressionMinSize >= 0) {
-			tomcat.getConnector().setProperty("compression",
-					String.valueOf(compressionMinSize));
-			tomcat.getConnector().setProperty("compressableMimeType",
-					compressableMimeType);
+		if (this.compressionMinSize >= 0) {
+			this.tomcat.getConnector().setProperty("compression",
+					String.valueOf(this.compressionMinSize));
+			this.tomcat.getConnector().setProperty("compressableMimeType",
+					this.compressableMimeType);
 		}
 
-		if (httpsPort != 0) {
+		if (this.httpsPort != 0) {
 			final Connector httpsConnector = new Connector("HTTP/1.1");
 			httpsConnector.setSecure(true);
-			httpsConnector.setPort(httpsPort);
-			httpsConnector.setMaxPostSize(maxPostSize);
+			httpsConnector.setPort(this.httpsPort);
+			httpsConnector.setMaxPostSize(this.maxPostSize);
 			httpsConnector.setScheme("https");
 			httpsConnector.setURIEncoding("UTF-8");
 
 			httpsConnector.setProperty("SSLEnabled", "true");
-			httpsConnector.setProperty("keyAlias", keyAlias);
-			httpsConnector.setProperty("keystoreFile", keyStoreFile);
-			httpsConnector.setProperty("keystorePass", keyStorePass);
-			httpsConnector.setProperty("sslProtocol", sslProtocol);
+			httpsConnector.setProperty("keyAlias", this.keyAlias);
+			httpsConnector.setProperty("keystoreFile", this.keyStoreFile);
+			httpsConnector.setProperty("keystorePass", this.keyStorePass);
+			httpsConnector.setProperty("sslProtocol", this.sslProtocol);
 
-			if (compressionMinSize >= 0) {
+			if (this.compressionMinSize >= 0) {
 				httpsConnector.setProperty("compression",
-						String.valueOf(compressionMinSize));
-				httpsConnector.setProperty("compressableMimeType", compressableMimeType);
+						String.valueOf(this.compressionMinSize));
+				httpsConnector.setProperty("compressableMimeType",
+						this.compressableMimeType);
 			}
 
-			tomcat.getEngine().setDefaultHost("localhost");
-			tomcat.getService().addConnector(httpsConnector);
+			this.tomcat.getEngine().setDefaultHost("localhost");
+			this.tomcat.getService().addConnector(httpsConnector);
 		}
 
-		if (shutdownPort != null) {
-			tomcat.getServer().setPort(shutdownPort);
+		if (this.shutdownPort != null) {
+			this.tomcat.getServer().setPort(this.shutdownPort);
 		}
 
-		String contextDir = contextDirectory;
+		String contextDir = this.contextDirectory;
 		if (contextDir == null) {
 			contextDir = new File(".").getAbsolutePath() + "/src/main/webapp";
 		}
@@ -798,18 +800,18 @@ public class EmbeddedTomcat {
 		final Context ctx;
 		try {
 
-			if (!contextPath.equals("")) {
+			if (!this.contextPath.equals("")) {
 				File rootCtxDir = new File("./target/tcroot");
 				if (!rootCtxDir.exists()) {
 					rootCtxDir.mkdirs();
 				}
-				Context rootCtx = tomcat.addWebapp("", rootCtxDir.getAbsolutePath());
+				Context rootCtx = this.tomcat.addWebapp("", rootCtxDir.getAbsolutePath());
 				rootCtx.setPrivileged(true);
 				Tomcat.addServlet(rootCtx, "listContexts",
 						new ListContextsServlet(rootCtx)).addMapping("/");
 			}
 
-			ctx = tomcat.addWebapp(contextPath, contextDir);
+			ctx = this.tomcat.addWebapp(this.contextPath, contextDir);
 			WebResourceRoot resourceRoot = new StandardRoot(ctx);
 			DirResourceSet dirResource = new DirResourceSet(resourceRoot,
 					"/WEB-INF/classes", "./target/classes", "/");
@@ -820,40 +822,40 @@ public class EmbeddedTomcat {
 			throw new RuntimeException(e);
 		}
 
-		if (privileged) {
+		if (this.privileged) {
 			ctx.setPrivileged(true);
 		}
 
-		if (enableNaming || !contextEnvironments.isEmpty() || !contextResources.isEmpty()
-				|| contextFileURL != null) {
-			tomcat.enableNaming();
+		if (this.enableNaming || !this.contextEnvironments.isEmpty()
+				|| !this.contextResources.isEmpty() || this.contextFileURL != null) {
+			this.tomcat.enableNaming();
 
-			if (addDefaultListeners) {
-				tomcat.getServer().addLifecycleListener(
+			if (this.addDefaultListeners) {
+				this.tomcat.getServer().addLifecycleListener(
 						new GlobalResourcesLifecycleListener());
 			}
 		}
 
-		if (addDefaultListeners) {
-			Server server = tomcat.getServer();
+		if (this.addDefaultListeners) {
+			Server server = this.tomcat.getServer();
 			server.addLifecycleListener(new JreMemoryLeakPreventionListener());
 			server.addLifecycleListener(new ThreadLocalLeakPreventionListener());
 		}
 
-		for (ContextEnvironment env : contextEnvironments) {
+		for (ContextEnvironment env : this.contextEnvironments) {
 			ctx.getNamingResources().addEnvironment(env);
 		}
 
-		for (ContextResource res : contextResources) {
+		for (ContextResource res : this.contextResources) {
 			ctx.getNamingResources().addResource(res);
 		}
 
-		for (ApplicationParameter param : contextInitializationParameters) {
+		for (ApplicationParameter param : this.contextInitializationParameters) {
 			ctx.addApplicationParameter(param);
 		}
 
-		if (contextFileURL != null) {
-			ctx.setConfigFile(contextFileURL);
+		if (this.contextFileURL != null) {
+			ctx.setConfigFile(this.contextFileURL);
 		}
 
 		// Shutdown tomcat if a failure occurs during startup
@@ -861,14 +863,14 @@ public class EmbeddedTomcat {
 			@Override
 			public void lifecycleEvent(LifecycleEvent event) {
 				if (event.getLifecycle().getState() == LifecycleState.FAILED) {
-					((StandardServer) tomcat.getServer()).stopAwait();
+					((StandardServer) EmbeddedTomcat.this.tomcat.getServer()).stopAwait();
 
 				}
 			}
 		});
 
 		try {
-			tomcat.start();
+			this.tomcat.start();
 		}
 		catch (LifecycleException e) {
 			throw new RuntimeException(e);
@@ -879,7 +881,7 @@ public class EmbeddedTomcat {
 		installSlf4jBridge();
 
 		if (await) {
-			tomcat.getServer().await();
+			this.tomcat.getServer().await();
 			stop();
 		}
 
@@ -889,9 +891,9 @@ public class EmbeddedTomcat {
 	 * Stops the embedded tomcat. Does nothing if it's not started
 	 */
 	public void stop() {
-		if (tomcat != null) {
+		if (this.tomcat != null) {
 			try {
-				tomcat.stop();
+				this.tomcat.stop();
 			}
 			catch (LifecycleException e) {
 				throw new RuntimeException(e);
@@ -914,8 +916,8 @@ public class EmbeddedTomcat {
 	}
 
 	private void sendShutdownCommand() {
-		if (shutdownPort != null) {
-			try (final Socket socket = new Socket("localhost", shutdownPort);
+		if (this.shutdownPort != null) {
+			try (final Socket socket = new Socket("localhost", this.shutdownPort);
 					final OutputStream stream = socket.getOutputStream()) {
 
 				for (int i = 0; i < "SHUTDOWN".length(); i++) {
@@ -925,13 +927,13 @@ public class EmbeddedTomcat {
 				stream.flush();
 			}
 			catch (UnknownHostException e) {
-				if (!silent) {
+				if (!this.silent) {
 					log.debug(e);
 				}
 				return;
 			}
 			catch (IOException e) {
-				if (!silent) {
+				if (!this.silent) {
 					log.debug(e);
 				}
 				return;
@@ -940,8 +942,8 @@ public class EmbeddedTomcat {
 			// try to wait the specified amount of seconds until port becomes
 			// available
 			int count = 0;
-			while (count < secondsToWaitBeforePortBecomesAvailable * 2) {
-				try (final ServerSocket srv = new ServerSocket(httpPort)) {
+			while (count < this.secondsToWaitBeforePortBecomesAvailable * 2) {
+				try (final ServerSocket srv = new ServerSocket(this.httpPort)) {
 					return;
 				}
 				catch (IOException e) {
