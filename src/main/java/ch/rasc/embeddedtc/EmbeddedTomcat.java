@@ -102,6 +102,8 @@ public class EmbeddedTomcat {
 
 	private boolean addDefaultListeners = false;
 
+	private boolean useNio2 = false;
+
 	private int compressionMinSize = -1;
 
 	private String compressableMimeType;
@@ -467,6 +469,18 @@ public class EmbeddedTomcat {
 		return this;
 	}
 
+	/**
+	 * Instructs the embedded tomcat to use the NIO2 Connector
+	 * (org.apache.coyote.http11.Http11Nio2Protocol) instead of the NIO Connector
+	 * (org.apache.coyote.http11.Http11NioProtocol)
+	 *
+	 * @return The embedded Tomcat
+	 */
+	public EmbeddedTomcat useNio2() {
+		this.useNio2 = true;
+		return this;
+	}
+
 	@SuppressWarnings("hiding")
 	public EmbeddedTomcat enableCompression(int compressionMinSize,
 			String compressableMimeType) {
@@ -752,9 +766,20 @@ public class EmbeddedTomcat {
 			this.tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
 		}
 
-		this.tomcat.setPort(this.httpPort);
-		this.tomcat.getConnector().setURIEncoding("UTF-8");
-		this.tomcat.getConnector().setMaxPostSize(this.maxPostSize);
+		if (this.useNio2) {
+			Connector connector = new Connector(
+					"org.apache.coyote.http11.Http11Nio2Protocol");
+			connector.setPort(this.httpPort);
+			connector.setURIEncoding("UTF-8");
+			connector.setMaxPostSize(this.maxPostSize);
+			this.tomcat.setConnector(connector);
+			this.tomcat.getService().addConnector(connector);
+		}
+		else {
+			this.tomcat.setPort(this.httpPort);
+			this.tomcat.getConnector().setURIEncoding("UTF-8");
+			this.tomcat.getConnector().setMaxPostSize(this.maxPostSize);
+		}
 
 		if (this.compressionMinSize >= 0) {
 			this.tomcat.getConnector().setProperty("compression",
@@ -764,7 +789,14 @@ public class EmbeddedTomcat {
 		}
 
 		if (this.httpsPort != 0) {
-			final Connector httpsConnector = new Connector("HTTP/1.1");
+			final Connector httpsConnector;
+			if (this.useNio2) {
+				httpsConnector = new Connector(
+						"org.apache.coyote.http11.Http11Nio2Protocol");
+			}
+			else {
+				httpsConnector = new Connector("HTTP/1.1");
+			}
 			httpsConnector.setSecure(true);
 			httpsConnector.setPort(this.httpsPort);
 			httpsConnector.setMaxPostSize(this.maxPostSize);
