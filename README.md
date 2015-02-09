@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/ralscha/embeddedtc.png)](http://travis-ci.org/ralscha/embeddedtc)
+[![Build Status](https://api.travis-ci.org/ralscha/embeddedtc.png)](https://travis-ci.org/ralscha/embeddedtc)
 
 Helper class to simplify starting an embedded Tomcat  for a Maven web application project in a integrated development environment (e.g. Eclipse) .
 
