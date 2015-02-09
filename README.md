@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/ralscha/embeddedtc.png)](http://travis-ci.org/ralscha/embeddedtc)
+[![Build Status](https://api.travis-ci.org/ralscha/embeddedtc.png)](https://travis-ci.org/ralscha/embeddedtc)
 
 Helper class to simplify starting an embedded Tomcat  for a Maven web application project in a integrated development environment (e.g. Eclipse) .
 
@@ -8,7 +8,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.17</version>
+			<version>1.18</version>
 			<scope>provided</scope>
 		</dependency>
 ```
@@ -74,6 +74,9 @@ public class StartTomcat {
 
 
 ## CHANGELOG Tomcat 7
+
+### 1.18     February 9, 2015
+  * Updated to Tomcat 7.0.59
 
 ### 1.17     January 15, 2015
   * Updated to Tomcat 7.0.57
