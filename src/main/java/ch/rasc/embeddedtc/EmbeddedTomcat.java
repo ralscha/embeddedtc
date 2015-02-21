@@ -592,7 +592,7 @@ public class EmbeddedTomcat {
 	 * res.setProperty(&quot;maxIdle&quot;, &quot;4&quot;);
 	 * res.setProperty(&quot;maxWait&quot;, &quot;10000&quot;);
 	 * res.setProperty(&quot;defaultAutoCommit&quot;, &quot;false&quot;);
-	 * 
+	 *
 	 * embeddedTomcat.addContextResource(res);
 	 * </pre>
 	 *
