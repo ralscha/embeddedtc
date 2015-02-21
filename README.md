@@ -63,6 +63,9 @@ public class StartTomcat {
 
 ## CHANGELOG Tomcat 8
 
+### 2.3     February 21, 2015
+  * Tomcat 8.0.20
+
 ### 2.2     January 27, 2015
   * Tomcat 8.0.18
 
