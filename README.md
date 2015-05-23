@@ -8,7 +8,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>2.5</version>
+			<version>2.6</version>
 			<scope>provided</scope>
 		</dependency>
 ```
