@@ -312,8 +312,8 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setContextPath(String contextPath) {
 
-		if (contextPath == null || !contextPath.equals("")
-				&& !contextPath.startsWith("/")) {
+		if (contextPath == null
+				|| !contextPath.equals("") && !contextPath.startsWith("/")) {
 			throw new IllegalArgumentException(
 					"contextPath must be the empty string \"\" or a path starting with /");
 		}
@@ -863,8 +863,8 @@ public class EmbeddedTomcat {
 			this.tomcat.enableNaming();
 
 			if (this.addDefaultListeners) {
-				this.tomcat.getServer().addLifecycleListener(
-						new GlobalResourcesLifecycleListener());
+				this.tomcat.getServer()
+						.addLifecycleListener(new GlobalResourcesLifecycleListener());
 			}
 		}
 

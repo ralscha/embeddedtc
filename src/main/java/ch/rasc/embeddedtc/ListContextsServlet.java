@@ -47,7 +47,8 @@ public class ListContextsServlet extends HttpServlet {
 		sb.append("<meta charset=\"utf-8\">");
 		sb.append("<title>Error 404 - Not Found</title>");
 		sb.append("</head>");
-		sb.append("<body style=\"font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;\">");
+		sb.append(
+				"<body style=\"font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;\">");
 		sb.append("<h2>Error 404 - Not Found.</h2>");
 
 		sb.append("No context on this server matched or handled this request.");
