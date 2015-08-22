@@ -1,8 +1,16 @@
+sudo: false
+
 language: java
+
 env:
   global:
   - SONATYPE_USERNAME=ralscha23
   - secure: DCcsv/vbk7in3GzYah4cdcTDDy4tAyeGNJugXAT7iAoXPzisLhAk/JkQjaw69VqjpYJzTVe0HJhtUhcpBakKm8V+0/L2bGNUNoMCoMcfvFjcNVFwqTtP0MotaMFXf9JQ/QNAKzkyZw7JoqSiZVlp/bPwz0eN0thrNXQ1Ph5FcYM=
+
 after_success:
 - python addsettings.py
 - mvn clean deploy -DskipTests=true --settings ~/.m2/mySettings.xml
+
+cache:
+  directories:
+  - $HOME/.m2
