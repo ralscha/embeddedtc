@@ -8,8 +8,8 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.21</version>
-			<!-- Tomcat8: <version>2.7</version> -->
+			<version>1.22</version>
+			<!-- Tomcat8: <version>2.8</version> -->
 			<scope>provided</scope>
 		</dependency>
 ```
@@ -93,6 +93,9 @@ public class StartTomcat {
 
 
 ## CHANGELOG Tomcat 7
+
+### 1.22     September 2, 2015
+  * Updated to Tomcat 7.0.64
 
 ### 1.21     July 8, 2015
   * Updated to Tomcat 7.0.63
