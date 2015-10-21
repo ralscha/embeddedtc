@@ -8,7 +8,7 @@ Add this dependency to your project.
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>embeddedtc</artifactId>
-			<version>1.22</version>
+			<version>1.23</version>
 			<!-- Tomcat8: <version>2.10</version> -->
 			<scope>provided</scope>
 		</dependency>
@@ -100,70 +100,73 @@ public class StartTomcat {
 
 ## CHANGELOG Tomcat 7
 
+### 1.23     October 21, 2015
+  * Upgraded to Tomcat 7.0.65
+
 ### 1.22     September 2, 2015
-  * Updated to Tomcat 7.0.64
+  * Upgraded to Tomcat 7.0.64
 
 ### 1.21     July 8, 2015
-  * Updated to Tomcat 7.0.63
+  * Upgraded to Tomcat 7.0.63
 
 ### 1.20     May 18, 2015
-  * Updated to Tomcat 7.0.62
+  * Upgraded to Tomcat 7.0.62
 
 ### 1.19     April 14, 2015
-  * Updated to Tomcat 7.0.61
+  * Upgraded to Tomcat 7.0.61
 
 ### 1.18     February 9, 2015
-  * Updated to Tomcat 7.0.59
+  * Upgraded to Tomcat 7.0.59
 
 ### 1.17     January 15, 2015
-  * Updated to Tomcat 7.0.57
+  * Upgraded to Tomcat 7.0.57
   * Add support for TLS
   * Add config option for maxPostSize
 
 ### 1.16     October 8, 2014
-  * Updated to Tomcat 7.0.56
+  * Upgraded to Tomcat 7.0.56
 
 ### 1.15     August 5, 2014
-  * Updated to Tomcat 7.0.55
+  * Upgraded to Tomcat 7.0.55
 
 ### 1.14     May 28, 2014
-  * Updated to Tomcat 7.0.54
+  * Upgraded to Tomcat 7.0.54
 
 ### 1.13     April 2, 2014
-  * Updated to Tomcat 7.0.53
+  * Upgraded to Tomcat 7.0.53
   
 ### 1.12     February 20, 2014
-  * Updated to Tomcat 7.0.52
+  * Upgraded to Tomcat 7.0.52
 
 ### 1.11     January 13, 2014
-  * Updated to Tomcat 7.0.50
+  * Upgraded to Tomcat 7.0.50
   * Add a call to stop() when somebody sends a shutdown command. Previous versions did not stop the server.  
 
 ### 1.10     October 26, 2013
-  * Updated to Tomcat 7.0.47
+  * Upgraded to Tomcat 7.0.47
   * Fix some issues and javadocs concerning the shutdown port
   
 ### 1.9     July 7, 2013
-  * Updated to Tomcat 7.0.42
+  * Upgraded to Tomcat 7.0.42
   * Fixed bug in TargetClassesContext. Only handle /WEB-INF/classes special case and call superclass for every other name.
     Bug prevented [ServletContext.getResourcePaths](http://docs.oracle.com/javaee/7/api/javax/servlet/ServletContext.html#getResourcePaths(java.lang.String)) to work correctly. 
 
 ### 1.8     June 10, 2013
-  * Updated to Tomcat 7.0.41
+  * Upgraded to Tomcat 7.0.41
   * Automatically add a list context servlet when application is not running on root context (""). 
     This servlet sends a 404 and lists the configured context path when the user tries to connect to an unknown context. Similar to jetty
 
 ### 1.7     May 9, 2013
-  * Updated to Tomcat 7.0.40
+  * Upgraded to Tomcat 7.0.40
 
 ### 1.6     March 28, 2013
-  * Updated to Tomcat 7.0.39
+  * Upgraded to Tomcat 7.0.39
 
 ### 1.5     February 19, 2013
-  * Updated to Tomcat 7.0.37
+  * Upgraded to Tomcat 7.0.37
   
 ### 1.4     January 31, 2013
-  * Updated to Tomcat 7.0.35
+  * Upgraded to Tomcat 7.0.35
   * Added addContextInitializationParameter method. Adds context parameters that are accessible within the application with 
     [ServletContext#getInitParameter](http://docs.oracle.com/javaee/6/api/javax/servlet/ServletContext.html#getInitParameter\(java.lang.String\))
   * Deprectated addContextEnvironmentAndResourceFromFile method and replaced it with setContextFile. This library no longer reads this file it
@@ -173,13 +176,13 @@ public class StartTomcat {
 
 ### 1.3     November 22, 2012 
   * Use "" for the root context. / is wrong.
-  * Updated to Tomcat 7.0.33
+  * Upgraded to Tomcat 7.0.33
 
 ### 1.2     October 17, 2012
-  * Updated to Tomcat 7.0.32
+  * Upgraded to Tomcat 7.0.32
 
 ### 1.1     September 8, 2012
-  * Updated to Tomcat 7.0.30
+  * Upgraded to Tomcat 7.0.30
   * Added useNio() method. Instructs the embedded Tomcat to use the Non Blocking Connector
     (org.apache.coyote.http11.Http11NioProtocol) instead of the Blocking Connector 
     (org.apache.coyote.http11.Http11Protocol)
@@ -205,13 +208,13 @@ public class StartTomcat {
 
 ### 1.0     July 11, 2012
   * Moved to a new package ch.ralscha -> ch.rasc
-  * Updated to Tomcat 7.0.29
+  * Upgraded to Tomcat 7.0.29
 
 ### 0.0.9   June 21, 2012
-  * Updated to Tomcat 7.0.28
+  * Upgraded to Tomcat 7.0.28
 
 ### 0.0.8   May 21, 2012
-  * Updated ecj to 3.7.2
+  * Upgraded ecj to 3.7.2
   * Fix bug in installSlf4jBridge. install() does not have a parameter
 
 ### 0.0.7   April 17, 2012
@@ -220,7 +223,7 @@ public class StartTomcat {
     Servlet 3.0 Annotations and ServletContainerInitializer are now working out of the box.
 
 ### 0.0.6   March 9, 2012
-  * Updated to Tomcat 7.0.27
+  * Upgraded to Tomcat 7.0.27
   
 ### 0.0.5   March 9, 2012
   * Bugfix: Make class ContextConfig public. Digester cannot access class if it has package visibility
