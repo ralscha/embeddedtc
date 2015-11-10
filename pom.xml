@@ -182,7 +182,9 @@
 						<exclude>**/.gitignore</exclude>
 						<exclude>**/*.md</exclude>
 						<exclude>**/*.py</exclude>
-						<exclude>**/*.yml</exclude>					
+						<exclude>**/*.yml</exclude>	
+						<exclude>.mvn/**/*</exclude>
+						<exclude>mvnw.cmd</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>
