@@ -221,6 +221,10 @@ public class EmbeddedTomcat {
 	}
 
 	/**
+	 * Sets the port the server is listening for http requests
+	 *
+	 * @param port The new port
+	 * @return The embedded Tomcat 
 	 * @deprecated Use {@link #setHttpPort(int)} instead
 	 */
 	@Deprecated
@@ -567,7 +571,7 @@ public class EmbeddedTomcat {
 	 * Tomcat context xml file
 	 *
 	 * <pre>
-	 *  &ltResource name="jdbc/ds" auth="Container"
+	 *  &lt;Resource name="jdbc/ds" auth="Container"
 	 *     type="javax.sql.DataSource" username="sa" password=""
 	 *     driverClassName="org.h2.Driver"
 	 *     url="jdbc:h2:~/mydb"
