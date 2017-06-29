@@ -224,7 +224,7 @@ public class EmbeddedTomcat {
 	 * Sets the port the server is listening for http requests
 	 *
 	 * @param port The new port
-	 * @return The embedded Tomcat 
+	 * @return The embedded Tomcat
 	 * @deprecated Use {@link #setHttpPort(int)} instead
 	 */
 	@Deprecated
@@ -314,8 +314,8 @@ public class EmbeddedTomcat {
 	 */
 	public EmbeddedTomcat setContextPath(String contextPath) {
 
-		if (contextPath == null || !contextPath.equals("")
-				&& !contextPath.startsWith("/")) {
+		if (contextPath == null
+				|| !contextPath.equals("") && !contextPath.startsWith("/")) {
 			throw new IllegalArgumentException(
 					"contextPath must be the empty string \"\" or a path starting with /");
 		}
@@ -594,7 +594,7 @@ public class EmbeddedTomcat {
 	 * res.setProperty(&quot;maxIdle&quot;, &quot;4&quot;);
 	 * res.setProperty(&quot;maxWait&quot;, &quot;10000&quot;);
 	 * res.setProperty(&quot;defaultAutoCommit&quot;, &quot;false&quot;);
-	 * 
+	 *
 	 * embeddedTomcat.addContextResource(res);
 	 * </pre>
 	 *
@@ -897,8 +897,8 @@ public class EmbeddedTomcat {
 			this.tomcat.enableNaming();
 
 			if (this.addDefaultListeners) {
-				this.tomcat.getServer().addLifecycleListener(
-						new GlobalResourcesLifecycleListener());
+				this.tomcat.getServer()
+						.addLifecycleListener(new GlobalResourcesLifecycleListener());
 			}
 		}
 
