@@ -112,6 +112,9 @@ public class StartTomcat {
 
 ## CHANGELOG Tomcat 7
 
+### 1.28     July 18, 2017
+  * Tomcat 7.0.79
+
 ### 1.27     October 23, 2016
   * Tomcat 7.0.72
 
