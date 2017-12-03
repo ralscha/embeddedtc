@@ -44,7 +44,7 @@
 	</scm>
 
 	<properties>
-		<tomcat.version>7.0.79</tomcat.version>
+		<tomcat.version>7.0.82</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.debug>true</maven.compiler.debug>
 	</properties>
@@ -182,6 +182,8 @@
 						<exclude>**/*.yml</exclude>	
 						<exclude>.mvn/**/*</exclude>
 						<exclude>mvnw.cmd</exclude>
+						<exclude>mvnw</exclude>
+						<exclude>LICENSE</exclude>
 						<exclude>.editorconfig</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
